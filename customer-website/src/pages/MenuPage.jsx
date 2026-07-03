@@ -1,58 +1,9 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { Search, X, Leaf } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { getMenu } from '../services/api';
 import MenuCard from '../components/menu/MenuCard';
 import menuDoodleBg from '../assets/menu-doodle-bg.png';
-import floatingVeggies from '../assets/floating-veggies.png';
-
-// ── Canvas-based Black Background Remover ────────────────────────────────────
-const TransparentImage = ({ src, alt, className, style, threshold = 22 }) => {
-  const [processedSrc, setProcessedSrc] = useState(src);
-
-  useEffect(() => {
-    if (!src) return;
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.src = src;
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0);
-
-      try {
-        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imgData.data;
-
-        for (let i = 0; i < data.length; i += 4) {
-          const r = data[i];
-          const g = data[i + 1];
-          const b = data[i + 2];
-
-          // Using max color value for brightness
-          const brightness = Math.max(r, g, b);
-
-          if (brightness < threshold) {
-            data[i + 3] = 0; // Make transparent
-          } else if (brightness < threshold + 12) {
-            // Feather the edge smoothly
-            const factor = (brightness - threshold) / 12;
-            data[i + 3] = Math.round(factor * 255);
-          }
-        }
-
-        ctx.putImageData(imgData, 0, 0);
-        setProcessedSrc(canvas.toDataURL());
-      } catch (err) {
-        console.error('Failed to remove background dynamically:', err);
-      }
-    };
-  }, [src, threshold]);
-
-  return <img src={processedSrc || src} alt={alt} className={className} style={style} />;
-};
 
 const MenuPage = () => {
   const cartRef = useRef(null);
@@ -169,8 +120,8 @@ const MenuPage = () => {
         <div className="sticky top-16 z-30 py-3 mb-8 -mx-4 px-4 border-b"
           style={{ background: 'rgba(12,10,9,0.96)', backdropFilter: 'blur(20px)', borderColor: 'rgba(255,255,255,0.08)' }}>
 
-          {/* Row 1 — Search + Veg toggle */}
-          <div className="flex items-center gap-3 mb-3">
+          {/* Row 1 — Search + Veg toggle (stacked on mobile to ensure search box width) */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-3">
 
             {/* Search */}
             <div className="relative flex-1">
@@ -179,7 +130,7 @@ const MenuPage = () => {
                 placeholder="Search dishes..." className="input-field pl-11 pr-10 w-full" />
               {search && (
                 <button onClick={() => setSearch('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-500 hover:text-ink-950">
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-500 hover:text-ink-950 flex items-center justify-center w-8 h-8">
                   <X size={14} />
                 </button>
               )}
@@ -187,11 +138,11 @@ const MenuPage = () => {
 
             {/* Veg toggle */}
             <button onClick={() => setVegOnly(!vegOnly)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition-all flex-shrink-0"
+              className="flex items-center justify-center gap-1.5 px-5 py-3 sm:py-2 rounded-full text-sm font-semibold border transition-all flex-shrink-0"
               style={vegOnly
                 ? { background: 'rgba(22,163,74,0.08)', borderColor: 'rgba(22,163,74,0.35)', color: '#16a34a' }
                 : { borderColor: 'rgba(255,255,255,0.12)', color: '#a8a299' }}>
-              <Leaf size={13} /> <span className="hidden sm:inline">Veg Only</span><span className="sm:hidden">Veg</span>
+              <Leaf size={13} /> <span>Veg Only</span>
             </button>
           </div>
 
@@ -240,15 +191,15 @@ const MenuPage = () => {
                   </div>
                 </div>
                 <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5">
-                  <AnimatePresence>
                     {categoryItems.map((item, i) => (
                       <motion.div key={item._id}
-                        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: Math.min(i, 8) * 0.04 }}>
                         <MenuCard item={item} cartRef={cartRef} />
                       </motion.div>
                     ))}
-                  </AnimatePresence>
-                </div>
+                  </div>
               </section>
             ))}
 

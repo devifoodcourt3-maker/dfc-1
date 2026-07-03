@@ -4,6 +4,7 @@ import { motion, useInView } from 'framer-motion';
 import {
   ArrowRight, Star, Clock, Bike, ShieldCheck,
   Phone, MapPin, ChevronRight, Flame, Sparkles, Navigation,
+  Zap, Quote, Award, Utensils, ChefHat, Cookie, Pizza, Soup,
 } from 'lucide-react';
 import { getMenu, getOffers } from '../services/api';
 import useSettingsStore from '../store/settingsStore';
@@ -26,63 +27,65 @@ import heroBiryaniNoBg from '../assets/hero-biryani-nobg.png';
 import heroRockyBg from '../assets/hero-rocky-bg.png';
 import featuredDishesBg from '../assets/featured-dishes-bg.png';
 
-// ── Canvas-based Black Background Remover ────────────────────────────────────
+// ── Canvas-based Black Background Remover (deferred to idle time) ────────────────
 const TransparentImage = ({ src, alt, className, style, threshold = 22 }) => {
-  const [processedSrc, setProcessedSrc] = useState(src);
+  const [processedSrc, setProcessedSrc] = useState(null);
 
   useEffect(() => {
     if (!src) return;
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.src = src;
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0);
-      
-      try {
-        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imgData.data;
-        
-        for (let i = 0; i < data.length; i += 4) {
-          const r = data[i];
-          const g = data[i + 1];
-          const b = data[i + 2];
-          
-          // Using max color value for brightness
-          const brightness = Math.max(r, g, b);
-          
-          if (brightness < threshold) {
-            data[i + 3] = 0; // Make transparent
-          } else if (brightness < threshold + 12) {
-            // Feather the edge smoothly
-            const factor = (brightness - threshold) / 12;
-            data[i + 3] = Math.round(factor * 255);
-          }
-        }
-        
-        ctx.putImageData(imgData, 0, 0);
-        setProcessedSrc(canvas.toDataURL());
-      } catch (err) {
-        console.error('Failed to remove background dynamically:', err);
+    // Defer expensive canvas pixel work to idle time so it never blocks paint
+    const scheduleWork = (callback) => {
+      if (typeof requestIdleCallback !== 'undefined') {
+        requestIdleCallback(callback, { timeout: 2000 });
+      } else {
+        setTimeout(callback, 100);
       }
     };
+
+    scheduleWork(() => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = src;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        try {
+          const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const data = imgData.data;
+          for (let i = 0; i < data.length; i += 4) {
+            const brightness = Math.max(data[i], data[i + 1], data[i + 2]);
+            if (brightness < threshold) {
+              data[i + 3] = 0;
+            } else if (brightness < threshold + 12) {
+              data[i + 3] = Math.round(((brightness - threshold) / 12) * 255);
+            }
+          }
+          ctx.putImageData(imgData, 0, 0);
+          setProcessedSrc(canvas.toDataURL());
+        } catch (err) {
+          // Silently keep the original src on CORS errors
+        }
+      };
+    });
   }, [src, threshold]);
 
-  return <img src={processedSrc} alt={alt} className={className} style={style} />;
+  // Show original image immediately; swap to processed version when ready
+  return <img src={processedSrc ?? src} alt={alt} className={className} style={style} />;
 };
 
 // ── Animated section wrapper ───────────────────────────────────────────────
 const Section = ({ children, className = '', delay = 0 }) => {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-60px' });
+  const inView = useInView(ref, { once: true, margin: '-80px' });
   return (
     <motion.section ref={ref}
-      initial={{ opacity: 0, y: 36 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.65, ease: 'easeOut', delay }}
+      // Opacity-only animation: runs purely on compositor thread, zero layout cost
+      initial={{ opacity: 0 }}
+      animate={inView ? { opacity: 1 } : {}}
+      transition={{ duration: 0.55, ease: 'easeOut', delay }}
       className={className}
     >{children}</motion.section>
   );
@@ -138,16 +141,15 @@ const REVIEWS = [
 ];
 
 const WHY_US = [
-  { emoji: '🍳', title: 'Freshly Cooked', desc: 'Every dish is prepared fresh to order using authentic recipes and premium spices.', color: '#ff5a00' },
-  { emoji: '⚡', title: 'Fast Delivery',   desc: 'Hot food at your door in 30–45 min. We never compromise on speed or quality.', color: '#ea580c' },
-  { emoji: '📍', title: 'Live Tracking',   desc: 'Watch your order move from kitchen to doorstep in real-time.', color: '#fb923c' },
-  { emoji: '🛡️', title: 'Food Safety',     desc: 'Prepared in a hygienic, certified kitchen by experienced chefs every single day.', color: '#c2410c' },
+  { icon: ChefHat, title: 'Freshly Cooked', desc: 'Every dish is prepared fresh to order using authentic recipes and premium spices.', color: '#ff5a00' },
+  { icon: Zap, title: 'Fast Delivery',   desc: 'Hot food at your door in 30–45 min. We never compromise on speed or quality.', color: '#ea580c' },
+  { icon: Navigation, title: 'Live Tracking',   desc: 'Watch your order move from kitchen to doorstep in real-time.', color: '#fb923c' },
+  { icon: ShieldCheck, title: 'Food Safety',     desc: 'Prepared in a hygienic, certified kitchen by experienced chefs every single day.', color: '#c2410c' },
 ];
 
 const MARQUEE_ITEMS = [
-  '🍗 Chicken', '🫓 Bakery', '🍚 Biryani', '🔥 Tandoori',
-  '🍕 Pizza', '🥤 Mocktails', '🍬 Sweets', '🍛 Curries',
-  '🥗 Starters', '🍰 Desserts', '🍹 Juices', '🍖 Kebabs',
+  'SIGNATURE DUM BIRYANI', 'AUTHENTIC CURRIES', 'TANDOORI GRILLS', 'HERITAGE SWEETS',
+  'PREMIUM BAKERY', 'FRESH MOCKTAILS', 'MOUTH-WATERING STARTERS', 'EXOTIC KEBABS',
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -194,21 +196,22 @@ const HomePage = () => {
         <div className="absolute inset-0 pointer-events-none"
              style={{ background: 'radial-gradient(ellipse 80% 80% at 50% 50%, transparent 40%, rgba(0,0,0,0.65) 100%)' }} />
 
-        {/* Soft ambient orange color blobs */}
+        {/* Soft ambient orange color blobs — static radial gradients, no animation cost */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="orb-orange absolute w-[560px] h-[560px] -top-40 -right-40 rounded-full animate-float-slow" />
-          <div className="orb-red absolute w-[460px] h-[460px] -bottom-32 -left-32 rounded-full animate-float-delayed" />
-          <div className="orb-orange absolute w-[320px] h-[320px] top-1/3 left-1/3 rounded-full animate-float" />
+          <div className="orb-orange absolute w-[560px] h-[560px] -top-40 -right-40 rounded-full" />
+          <div className="orb-red absolute w-[460px] h-[460px] -bottom-32 -left-32 rounded-full" />
+          <div className="orb-orange absolute w-[320px] h-[320px] top-1/3 left-1/3 rounded-full" />
         </div>
 
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 pt-24 md:pt-28 pb-10">
+        {/* Desktop Hero Grid (Visible on Desktop/Lg screens) */}
+        <div className="hidden lg:block relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 pt-24 md:pt-28 pb-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             
             {/* Left Content Column */}
             <div className="lg:col-span-7 space-y-6 text-left">
               
               {/* Brand Logo & Live Badge */}
-              <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-3">
                 <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5 }} className="flex-shrink-0">
                   <img src={dfcLogo} alt="DFC Logo" className="w-32 h-32 object-contain animate-logo-breathe" />
@@ -240,10 +243,10 @@ const HomePage = () => {
               {/* Action Buttons */}
               <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.0 }}
                 className="flex flex-row items-center gap-4 pt-2">
-                <Link to="/menu" className="btn-primary text-xs sm:text-base px-6 py-3 sm:px-8 sm:py-3.5 shadow-orange-glow">
+                <Link to="/menu" className="btn-primary text-center justify-center text-xs sm:text-base px-6 py-3 sm:px-8 sm:py-3.5 shadow-orange-glow">
                   View Our Menu <ArrowRight size={16} />
                 </Link>
-                <Link to="/offers" className="btn-outline text-xs sm:text-base px-6 py-3 sm:px-8 sm:py-3.5 border-white/10 hover:border-white/20 text-white">
+                <Link to="/offers" className="btn-outline text-center justify-center text-xs sm:text-base px-6 py-3 sm:px-8 sm:py-3.5 border-white/10 hover:border-white/20 text-white">
                   Today's Offers
                 </Link>
               </motion.div>
@@ -257,10 +260,10 @@ const HomePage = () => {
                 ].map(({ target, suffix, label }, i) => (
                   <motion.div key={label} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 1.2 + i * 0.15 }}>
-                    <p className="text-xl sm:text-2xl font-display text-white tracking-wide">
+                    <p className="text-2xl font-display text-white tracking-wide">
                       <Counter target={target} suffix={suffix} />
                     </p>
-                    <p className="text-ink-600 text-[10px] sm:text-xs mt-0.5 uppercase tracking-wider">{label}</p>
+                    <p className="text-ink-600 text-xs mt-0.5 uppercase tracking-wider">{label}</p>
                   </motion.div>
                 ))}
               </div>
@@ -268,68 +271,65 @@ const HomePage = () => {
             </div>
 
             {/* Right Column: Biryani Outlet Image with Smoke Animation */}
-            <div className="lg:col-span-5 flex justify-center lg:justify-end relative">
+            <div className="lg:col-span-5 flex justify-center lg:justify-end relative w-full">
               <motion.div
-                initial={{ opacity: 0, scale: 0.88, y: 30 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 1.3, ease: 'easeOut' }}
-                className="relative w-[300px] h-[340px] sm:w-[400px] sm:h-[460px] md:w-[460px] md:h-[520px] flex items-end justify-center"
-              >
-                {/* Deep orange glow behind the biryani */}
-                <div className="absolute inset-x-0 bottom-0 h-2/3 rounded-full pointer-events-none"
-                  style={{ background: 'radial-gradient(ellipse 70% 60% at 50% 100%, rgba(255,90,0,0.28) 0%, transparent 70%)' }} />
+                 initial={{ opacity: 0, scale: 0.88, y: 30 }}
+                 animate={{ opacity: 1, scale: 1, y: 0 }}
+                 transition={{ duration: 1.3, ease: 'easeOut' }}
+                 className="relative w-full max-w-[480px] md:max-w-[550px] h-[520px] md:h-[600px] flex items-end justify-center"
+               >
+                 {/* Deep orange glow behind the biryani */}
+                 <div className="absolute inset-x-0 bottom-0 h-2/3 rounded-full pointer-events-none"
+                   style={{ background: 'radial-gradient(ellipse 70% 60% at 50% 100%, rgba(255,90,0,0.28) 0%, transparent 70%)' }} />
 
-                {/* Main Biryani Image — dynamically removes background */}
-                <motion.div
-                  animate={{ y: [0, -10, 0] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                  className="relative z-10 w-full h-full flex items-end justify-center"
-                >
-                  <TransparentImage
-                    src={heroBiryaniNoBg}
-                    alt="Signature Dum Biryani"
-                    className="w-full h-full object-contain"
-                    style={{
-                      filter: 'drop-shadow(0 20px 50px rgba(255,90,0,0.15)) drop-shadow(0 0 60px rgba(0,0,0,0.85))',
-                    }}
-                    threshold={24}
-                  />
-                </motion.div>
+                 {/* Main Biryani Image — dynamically removes background */}
+                 <motion.div
+                   animate={{ y: [0, -10, 0] }}
+                   transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                   className="relative z-10 w-full h-full flex items-end justify-center"
+                 >
+                   <TransparentImage
+                     src={heroBiryaniNoBg}
+                     alt="Signature Dum Biryani"
+                     className="w-full h-full object-contain"
+                     style={{
+                       filter: 'drop-shadow(0 20px 50px rgba(255,90,0,0.15)) drop-shadow(0 0 60px rgba(0,0,0,0.85))',
+                     }}
+                     threshold={24}
+                   />
+                 </motion.div>
 
-                {/* Smoke puff container — rises from top of biryani pot (on top of the image) */}
-                <div className="smoke-container z-20">
-                  <div className="smoke-puff" />
-                  <div className="smoke-puff" />
-                  <div className="smoke-puff" />
-                  <div className="smoke-puff" />
-                  <div className="smoke-puff" />
-                  <div className="smoke-puff" />
-                  <div className="smoke-puff" />
-                </div>
+                 {/* Smoke puff container — 4 puffs (reduced from 7) for better GPU performance */}
+                 <div className="smoke-container z-20">
+                   <div className="smoke-puff" />
+                   <div className="smoke-puff" />
+                   <div className="smoke-puff" />
+                   <div className="smoke-puff" />
+                 </div>
 
-                {/* Floating Badge */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.4 }}
-                  className="absolute bottom-2 -left-2 sm:left-2 border border-white/10 backdrop-blur-md rounded-2xl p-3 sm:p-4 shadow-2xl flex items-center gap-3 w-52 sm:w-60 text-left z-20"
-                  style={{ background: 'rgba(22,20,19,0.88)' }}
-                >
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-brand-500/10 border border-brand-500/30 flex items-center justify-center text-lg sm:text-xl flex-shrink-0">
-                    🔥
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-xs sm:text-sm text-white">Hyd Dum Biryani</h3>
-                    <p className="text-[10px] sm:text-xs text-ink-600 mt-0.5">Chef's Signature Blend</p>
-                    <div className="flex items-center justify-between mt-1 sm:mt-1.5">
-                      <span className="text-xs font-bold" style={{ color: '#ff5a00' }}>₹240</span>
-                      <Link to="/menu?cat=Biryani" className="text-[10px] text-white font-semibold px-2.5 py-1 rounded-full transition-all"
-                        style={{ background: '#ff5a00' }}>
-                        Order Now
-                      </Link>
-                    </div>
-                  </div>
-                </motion.div>
+                 {/* Floating Badge */}
+                 <motion.div
+                   initial={{ opacity: 0, y: 20 }}
+                   animate={{ opacity: 1, y: 0 }}
+                   transition={{ delay: 1.4 }}
+                   className="absolute bottom-4 left-4 border border-white/10 backdrop-blur-md rounded-2xl p-4 shadow-2xl flex items-center gap-3 w-60 text-left z-20"
+                   style={{ background: 'rgba(22,20,19,0.88)' }}
+                 >
+                   <div className="w-12 h-12 rounded-xl bg-brand-500/10 border border-brand-500/30 flex items-center justify-center text-xl flex-shrink-0">
+                     🔥
+                   </div>
+                   <div>
+                     <h3 className="font-bold text-sm text-white">Hyd Dum Biryani</h3>
+                     <p className="text-xs text-ink-600 mt-0.5">Chef's Signature Blend</p>
+                     <div className="flex items-center justify-between mt-1.5">
+                       <span className="text-xs font-bold" style={{ color: '#ff5a00' }}>₹240</span>
+                       <Link to="/menu?cat=Biryani" className="text-[10px] text-white font-semibold px-2.5 py-1 rounded-full transition-all"
+                         style={{ background: '#ff5a00' }}>
+                         Order Now
+                       </Link>
+                     </div>
+                   </div>
+                 </motion.div>
 
               </motion.div>
             </div>
@@ -337,14 +337,154 @@ const HomePage = () => {
           </div>
         </div>
 
+        {/* ══ MOBILE HERO BLOCK ══════════════════════════════════════════════
+            Matches screenshot: full-viewport hero with large biryani image    */}
+        <div className="block lg:hidden relative z-10 w-full pt-20 pb-0 overflow-hidden">
+
+          {/* Status badge — full-width pill */}
+          {isOpen !== null && (
+            <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+              className="mb-3 px-4">
+              <span className="inline-flex items-center gap-1.5 bg-black/50 border border-white/10 text-[11px] font-semibold px-4 py-1.5 rounded-full backdrop-blur-md w-full justify-center">
+                <span className="w-2 h-2 rounded-full animate-pulse flex-shrink-0"
+                  style={{ background: isOpen ? '#22c55e' : '#ef4444' }} />
+                <span style={{ color: isOpen ? '#faf8f6' : '#ef4444' }}>
+                  {isOpen ? 'Now accepting online orders' : 'Currently closed — check back soon!'}
+                </span>
+              </span>
+            </motion.div>
+          )}
+
+          {/* Hero content area — heading on left, giant biryani on right */}
+          <div className="relative min-h-[290px] px-4">
+
+            {/* Left content column */}
+            <div className="relative z-10 pr-[160px]">
+              {/* DFC Logo */}
+              <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.15 }}
+                className="mb-2">
+                <img src={dfcLogo} alt="DFC Logo" className="w-16 h-16 object-contain animate-logo-breathe" />
+              </motion.div>
+
+              {/* Hero Heading */}
+              <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
+                className="font-display text-[26px] leading-[1.08] tracking-wide text-white uppercase">
+                The Delicious Food<br />For Your<br />
+                <span className="gradient-text-warm">Friends &amp; Family</span>
+              </motion.h1>
+            </div>
+
+            {/* Giant biryani image — absolute right, spanning full hero height */}
+            <div className="absolute right-[-8px] top-[-20px] w-[205px] h-[310px] pointer-events-none z-10">
+              <motion.div
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                className="relative w-full h-full"
+              >
+                <TransparentImage
+                  src={heroBiryaniNoBg}
+                  alt="Signature Dum Biryani"
+                  className="w-full h-full object-contain"
+                  style={{
+                    filter: 'drop-shadow(0 16px 40px rgba(255,90,0,0.25)) drop-shadow(0 0 40px rgba(0,0,0,0.9))',
+                  }}
+                  threshold={24}
+                />
+              </motion.div>
+              {/* Smoke puffs */}
+              <div className="smoke-container z-20 absolute inset-0">
+                <div className="smoke-puff" />
+                <div className="smoke-puff" />
+                <div className="smoke-puff" />
+              </div>
+              {/* Glow under biryani */}
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-32 h-16 rounded-full pointer-events-none"
+                style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 100%, rgba(255,90,0,0.35) 0%, transparent 80%)' }} />
+            </div>
+
+            {/* Description — below heading, constrained to left of image */}
+            <div className="relative z-10 mt-3 pr-[160px]">
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
+                className="font-serif italic text-ink-700 text-[11px] leading-relaxed">
+                Authentic chicken &amp; veg Biryani cooked to perfection, mouth-watering tandoori,
+                heritage sweets, bakery items &amp; mocktails — crafted by expert chefs.
+              </motion.p>
+            </div>
+
+            {/* CTA Button — full width, below image */}
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
+              className="relative z-20 mt-[100px]">
+              <Link to="/menu"
+                className="inline-flex items-center justify-center gap-2 font-bold text-sm text-white rounded-full px-8 py-3 shadow-orange-glow w-full"
+                style={{ background: 'linear-gradient(135deg, #ff5a00 0%, #ea580c 100%)' }}>
+                View Our Menu <ArrowRight size={15} />
+              </Link>
+            </motion.div>
+
+          </div>{/* end hero content area */}
+
+          {/* ── Stats + Today's Offers row ─────────────────────── */}
+          <div className="mt-4 mx-4 rounded-2xl overflow-hidden"
+            style={{ background: 'rgba(22,20,19,0.85)', border: '1px solid rgba(255,255,255,0.08)' }}>
+
+            {/* "Today's Offers" label */}
+            <div className="flex items-center justify-center gap-2 py-2.5 border-b border-white/5">
+              <span className="w-6 h-px bg-brand-500/60" />
+              <Sparkles size={10} className="text-brand-500" />
+              <span className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-brand-500">Today's Offers</span>
+              <Sparkles size={10} className="text-brand-500" />
+              <span className="w-6 h-px bg-brand-500/60" />
+            </div>
+
+            {/* Stats row with icons */}
+            <div className="grid grid-cols-3">
+              {[
+                { icon: '👥', target: 500, suffix: '+', label: 'HAPPY\nCUSTOMERS' },
+                { icon: '⭐', target: 4.9, suffix: '★', label: 'AVG RATING' },
+                { icon: '🕐', target: 30, suffix: 'MIN', label: 'AVG DELIVERY' },
+              ].map(({ icon, target, suffix, label }, idx) => (
+                <div key={label} className={`flex flex-col items-center py-3.5 gap-0.5 ${idx < 2 ? 'border-r border-white/5' : ''}`}>
+                  <span className="text-lg mb-0.5">{icon}</span>
+                  <p className="text-[17px] font-display text-white leading-none tracking-wide font-bold">
+                    <Counter target={target} suffix={suffix} />
+                  </p>
+                  <p className="text-ink-500 text-[8px] font-bold uppercase tracking-wider text-center whitespace-pre-line leading-tight mt-0.5">{label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Featured item card (Hyd Dum Biryani) ──────────────── */}
+          <div className="mt-3 mb-5 mx-4 rounded-2xl flex items-center gap-3 px-3 py-3"
+            style={{ background: 'rgba(22,20,19,0.85)', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0">
+              <img src={heroBiryani} alt="Hyd Dum Biryani" className="w-full h-full object-cover" loading="lazy" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5 mb-0.5">
+                <Flame size={12} className="text-brand-500" />
+                <span className="text-white font-bold text-[13px] truncate">Hyd Dum Biryani</span>
+              </div>
+              <p className="text-ink-500 text-[10px]">Chef's Signature Blend</p>
+              <p className="font-bold text-[15px] mt-0.5" style={{ color: '#ff5a00' }}>₹240</p>
+            </div>
+            <Link to="/menu?cat=Biryani"
+              className="flex-shrink-0 text-[11px] text-white font-bold px-4 py-2.5 rounded-full whitespace-nowrap"
+              style={{ background: 'linear-gradient(135deg, #ff5a00 0%, #ea580c 100%)' }}>
+              Order Now
+            </Link>
+          </div>
+
+        </div>{/* end mobile block */}
+
         {/* Marquee strip */}
         <div className="relative z-10 w-full mt-10 border-t border-b overflow-hidden py-3"
           style={{ borderColor: 'rgba(255, 90, 0, 0.15)', background: 'rgba(255, 90, 0, 0.03)' }}>
           <div className="marquee-inner">
             {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
-              <span key={i} className="inline-flex items-center gap-2 px-6 text-sm font-bold tracking-wide whitespace-nowrap text-ink-800">
+              <span key={i} className="inline-flex items-center gap-2 px-6 text-[10px] font-extrabold tracking-[0.2em] uppercase whitespace-nowrap text-ink-600">
                 {item}
-                <span style={{ color: 'rgba(255, 90, 0, 0.3)' }}>◆</span>
+                <span className="text-[6px] text-brand-500/50 mx-2">◆</span>
               </span>
             ))}
           </div>
@@ -364,21 +504,29 @@ const HomePage = () => {
           {/* Subtle dark overlay for readability */}
           <div className="absolute inset-0 bg-black/45 pointer-events-none" />
 
-          <Section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-20">
-            <div className="flex items-end justify-between mb-10">
+          <Section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-12 lg:py-20">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
               <div>
-                <p className="text-xs font-bold tracking-widest uppercase mb-1" style={{ color: '#ff5a00' }}>Today's Picks</p>
+                <div className="flex items-center gap-2 mb-2 justify-start">
+                  <span className="w-8 h-px bg-brand-500"></span>
+                  <span className="text-[10px] font-extrabold tracking-[0.25em] uppercase text-brand-500">Today's Picks</span>
+                </div>
                 <h2 className="section-heading mb-1 text-white">Featured Dishes</h2>
                 <p className="section-sub text-ink-600">Our chef's recommendations, served fresh</p>
               </div>
-              <Link to="/menu" className="flex items-center gap-1 text-sm font-semibold" style={{ color: '#ff5a00' }}>
+              <Link to="/menu" className="flex items-center gap-1 text-sm font-semibold hover:opacity-80 transition-opacity" style={{ color: '#ff5a00' }}>
                 View all <ChevronRight size={16} />
               </Link>
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
               {featured.map((item, i) => (
-                <motion.div key={item._id} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
+                <motion.div key={item._id}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true, amount: 0.1 }}
+                  transition={{ delay: i * 0.08 }}
+                  style={{ willChange: 'opacity' }}
+                >
                   <MenuCard item={item} cartRef={cartRef} />
                 </motion.div>
               ))}
@@ -388,50 +536,56 @@ const HomePage = () => {
       )}
 
       {/* ── CATEGORIES GRID ─────────────────────────────────────────────── */}
-      <Section className="max-w-7xl mx-auto px-4 sm:px-6 py-20">
+      <Section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 lg:py-20">
         <div className="text-center mb-12">
-          <p className="text-xs font-bold tracking-widest uppercase mb-2" style={{ color: '#ff5a00' }}>Explore Our Menu</p>
+          <div className="flex items-center gap-2 mb-2 justify-center">
+            <span className="w-8 h-px bg-brand-500"></span>
+            <span className="text-[10px] font-extrabold tracking-[0.25em] uppercase text-brand-500">Explore Our Menu</span>
+            <span className="w-8 h-px bg-brand-500"></span>
+          </div>
           <h2 className="section-heading mb-3 text-white">Popular Categories</h2>
           <p className="section-sub mx-auto text-center text-ink-600">Browse our most loved sections from both outlets</p>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 sm:gap-5">
+        <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-5">
           {[
-            { emoji: '🍗', label: 'Chicken',  cat: 'Starters', img: catChicken,  bg: 'rgba(255,90,0,0.05)', border: 'rgba(255,90,0,0.15)',  accent: '#ff5a00' },
-            { emoji: '🍚', label: 'Biryani',  cat: 'Biryani',  img: catBiryani,  bg: 'rgba(255,90,0,0.05)', border: 'rgba(255,90,0,0.15)',   accent: '#ff5a00' },
-            { emoji: '🍛', label: 'Curries',  cat: 'Curries',  img: catCurries,  bg: 'rgba(255,90,0,0.05)', border: 'rgba(255,90,0,0.15)',   accent: '#ff5a00' },
-            { emoji: '🔥', label: 'Tandoori', cat: 'Tandoori', img: catTandoori, bg: 'rgba(255,90,0,0.05)', border: 'rgba(255,90,0,0.15)',  accent: '#ff5a00' },
-            { emoji: '🍬', label: 'Sweets',   cat: 'Desserts', img: catSweets,   bg: 'rgba(255,90,0,0.05)', border: 'rgba(255,90,0,0.15)',   accent: '#ff5a00' },
-            { emoji: '🥤', label: 'Drinks',   cat: 'Drinks',   img: catDrinks,   bg: 'rgba(255,90,0,0.05)', border: 'rgba(255,90,0,0.15)',   accent: '#ff5a00' },
-          ].map(({ emoji, label, cat, img, bg, border, accent }, i) => (
+            { icon: ChefHat, label: 'Chicken',  cat: 'Starters', img: catChicken,  bg: 'rgba(255,90,0,0.02)', border: 'rgba(255,255,255,0.06)',  accent: '#ff5a00' },
+            { icon: Utensils, label: 'Biryani',  cat: 'Biryani',  img: catBiryani,  bg: 'rgba(255,90,0,0.02)', border: 'rgba(255,255,255,0.06)',   accent: '#ff5a00' },
+            { icon: Soup, label: 'Curries',  cat: 'Curries',  img: catCurries,  bg: 'rgba(255,90,0,0.02)', border: 'rgba(255,255,255,0.06)',   accent: '#ff5a00' },
+            { icon: Flame, label: 'Tandoori', cat: 'Tandoori', img: catTandoori, bg: 'rgba(255,90,0,0.02)', border: 'rgba(255,255,255,0.06)',  accent: '#ff5a00' },
+            { icon: Cookie, label: 'Sweets',   cat: 'Desserts', img: catSweets,   bg: 'rgba(255,90,0,0.02)', border: 'rgba(255,255,255,0.06)',   accent: '#ff5a00' },
+            { icon: Sparkles, label: 'Drinks',   cat: 'Drinks',   img: catDrinks,   bg: 'rgba(255,90,0,0.02)', border: 'rgba(255,255,255,0.06)',   accent: '#ff5a00' },
+          ].map(({ icon: Icon, label, cat, img, bg, border, accent }, i) => (
             <motion.div key={cat} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }} transition={{ delay: i * 0.05, duration: 0.4, ease: 'easeOut' }}>
               <Link to={`/menu?cat=${cat}`}
                 style={{ background: bg, border: `1.5px solid ${border}` }}
-                className="group flex flex-col items-center rounded-2xl overflow-hidden hover:shadow-soft-lg transition-all duration-300 card-hover text-center">
+                className="group flex flex-col items-center rounded-2xl overflow-hidden hover:shadow-soft-lg transition-all duration-300 card-hover text-center bg-[#161413]">
                 {/* Image */}
                 <div className="w-full aspect-square overflow-hidden relative">
                   <img
                     src={img}
                     alt={label}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
-                  {/* Emoji badge */}
+                  {/* Icon badge */}
                   <span
-                    className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full text-base shadow-md"
-                    style={{ background: 'rgba(22,20,19,0.92)', backdropFilter: 'blur(4px)' }}
+                    className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full shadow-md"
+                    style={{ background: 'rgba(22,20,19,0.92)', backdropFilter: 'blur(4px)', color: accent }}
                   >
-                    {emoji}
+                    <Icon size={14} />
                   </span>
                 </div>
                 {/* Label */}
                 <div className="w-full px-3 py-3">
                   <span
                     className="text-sm font-bold tracking-wide transition-colors duration-200"
-                    style={{ color: accent }}
+                    style={{ color: '#faf8f6' }}
                   >
                     {label}
                   </span>
-                  <p className="text-ink-500 text-xs mt-0.5 font-medium">Explore →</p>
+                  <p className="text-ink-500 text-xs mt-0.5 font-medium group-hover:text-brand-500 transition-colors">Explore →</p>
                 </div>
               </Link>
             </motion.div>
@@ -440,9 +594,13 @@ const HomePage = () => {
       </Section>
 
       {/* ── VISIT OUR OUTLETS ────────────────────────────────────────── */}
-      <Section className="max-w-5xl mx-auto px-4 sm:px-6 py-20">
+      <Section className="max-w-5xl mx-auto px-4 sm:px-6 py-12 lg:py-20">
         <div className="text-center mb-12">
-          <p className="text-xs font-bold tracking-widest uppercase mb-2" style={{ color: '#ff5a00' }}>Come Say Hi</p>
+          <div className="flex items-center gap-2 mb-2 justify-center">
+            <span className="w-8 h-px bg-brand-500"></span>
+            <span className="text-[10px] font-extrabold tracking-[0.25em] uppercase text-brand-500">Come Say Hi</span>
+            <span className="w-8 h-px bg-brand-500"></span>
+          </div>
           <h2 className="section-heading mb-3 text-white">Visit Our <span className="gradient-text">Outlets</span></h2>
           <p className="section-sub font-serif italic text-lg mx-auto text-center text-ink-700">Two iconic locations, the same unforgettable taste</p>
         </div>
@@ -476,11 +634,13 @@ const HomePage = () => {
               className="group rounded-3xl overflow-hidden card-premium"
               style={{ border: `1.5px solid ${accentBorder}`, boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}
             >
-              {/* Image */}
-              <div className="relative overflow-hidden h-[420px] lg:h-[380px]" style={{ background: '#12100f' }}>
+              {/* Image — responsive height so it does not dominate mobile viewports */}
+              <div className="relative overflow-hidden h-[200px] xs:h-[260px] sm:h-[320px] md:h-[380px]" style={{ background: '#12100f' }}>
                 <img
                   src={img}
                   alt={label}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover lg:object-contain transition-transform duration-700 group-hover:lg:scale-100 group-hover:scale-105"
                 />
                 {/* Subtle gradient overlay at bottom of image */}
@@ -530,18 +690,22 @@ const HomePage = () => {
         style={{ background: 'linear-gradient(135deg, #0c0a09 0%, #161413 50%, #0c0a09 100%)', borderColor: 'rgba(255,255,255,0.05)' }}>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
-            <p className="text-xs font-bold tracking-widest uppercase mb-2" style={{ color: '#ff5a00' }}>Our Promise</p>
+            <div className="flex items-center gap-2 mb-2 justify-center">
+              <span className="w-8 h-px bg-brand-500"></span>
+              <span className="text-[10px] font-extrabold tracking-[0.25em] uppercase text-brand-500">Our Promise</span>
+              <span className="w-8 h-px bg-brand-500"></span>
+            </div>
             <h2 className="section-heading mb-3 text-white">Why Choose <span className="gradient-text">DFC?</span></h2>
             <p className="section-sub mx-auto text-center text-ink-600">We go above and beyond for every single order</p>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
-            {WHY_US.map(({ emoji, title, desc, color }, i) => (
+            {WHY_US.map(({ icon: Icon, title, desc, color }, i) => (
               <motion.div key={title} initial={{ opacity: 0, y: 32 }} whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }} transition={{ delay: i * 0.12 }}
                 className="card-premium rounded-2xl p-4 sm:p-7 text-center group hover:-translate-y-2 transition-all duration-300">
-                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-5 transition-transform duration-300 group-hover:scale-110 text-2xl sm:text-3xl"
-                  style={{ background: `${color}14`, border: `1px solid ${color}30` }}>
-                  {emoji}
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-5 transition-transform duration-300 group-hover:scale-110"
+                  style={{ background: `${color}14`, border: `1px solid ${color}30`, color }}>
+                  <Icon size={24} className="sm:w-7 sm:h-7 w-5 h-5" />
                 </div>
                 <h3 className="font-bold text-white text-sm sm:text-base mb-1.5 sm:mb-2">{title}</h3>
                 <p className="text-ink-600 text-xs sm:text-sm leading-relaxed">{desc}</p>
@@ -552,15 +716,18 @@ const HomePage = () => {
       </Section>
 
       {/* ── OFFERS ──────────────────────────────────────────────────────── */}
-      <Section className="max-w-7xl mx-auto px-4 sm:px-6 py-20">
-        <div className="flex items-end justify-between mb-10">
+      <Section className="hidden lg:block max-w-7xl mx-auto px-4 sm:px-6 py-20">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
           <div>
-            <p className="text-xs font-bold tracking-widest uppercase mb-1" style={{ color: '#ff5a00' }}>Exclusive Deals</p>
+            <div className="flex items-center gap-2 mb-2 justify-start">
+              <span className="w-8 h-px bg-brand-500"></span>
+              <span className="text-[10px] font-extrabold tracking-[0.25em] uppercase text-brand-500">Exclusive Deals</span>
+            </div>
             <h2 className="section-heading mb-1 text-white">Today's Offers</h2>
             <p className="section-sub text-ink-600">Limited time deals, just for you</p>
           </div>
           {offers.length > 0 && (
-            <Link to="/offers" className="flex items-center gap-1 text-sm font-semibold" style={{ color: '#ff5a00' }}>
+            <Link to="/offers" className="flex items-center gap-1 text-sm font-semibold hover:opacity-80 transition-opacity" style={{ color: '#ff5a00' }}>
               All offers <ChevronRight size={16} />
             </Link>
           )}
@@ -642,9 +809,13 @@ const HomePage = () => {
       </Section>
 
       {/* ── REVIEWS (scrolling ticker) ────────────────────────────────── */}
-      <Section className="relative overflow-hidden py-20 border-y" style={{ borderColor: 'rgba(255,255,255,0.05)', background: '#12100f' }}>
+      <Section className="relative overflow-hidden py-12 lg:py-20 border-y" style={{ borderColor: 'rgba(255,255,255,0.05)', background: '#12100f' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-12 text-center">
-          <p className="text-xs font-bold tracking-widest uppercase mb-2" style={{ color: '#ff5a00' }}>Testimonials</p>
+          <div className="flex items-center gap-2 mb-2 justify-center">
+            <span className="w-8 h-px bg-brand-500"></span>
+            <span className="text-[10px] font-extrabold tracking-[0.25em] uppercase text-brand-500">Testimonials</span>
+            <span className="w-8 h-px bg-brand-500"></span>
+          </div>
           <h2 className="section-heading mb-3 text-white">What Our Customers Say</h2>
           <div className="flex justify-center gap-1 mt-3">
             <Stars count={5} size={16} />
@@ -656,12 +827,15 @@ const HomePage = () => {
           <div className="absolute right-0 top-0 bottom-0 w-24 z-10 pointer-events-none" style={{ background: 'linear-gradient(to left, #12100f, transparent)' }} />
           <div className="marquee-inner-slow">
             {[...REVIEWS, ...REVIEWS, ...REVIEWS, ...REVIEWS].map((review, i) => (
-              <div key={i} className="card-premium rounded-2xl p-6 mx-3 space-y-3 flex-shrink-0" style={{ width: '300px' }}>
-                <Stars count={review.rating} />
-                <p className="font-serif italic text-ink-700 text-base leading-relaxed">"{review.text}"</p>
-                <div className="flex items-center justify-between pt-2 border-t border-white/5">
-                  <p className="text-white font-semibold text-sm">{review.name}</p>
-                  <p className="text-ink-600 text-xs">{review.time}</p>
+              <div key={i} className="rounded-2xl p-6 mx-3 space-y-3 flex-shrink-0 bg-[#161413] border border-white/5 shadow-soft" style={{ width: '300px' }}>
+                <div className="flex justify-between items-center">
+                  <Stars count={review.rating} />
+                  <Quote size={16} className="text-brand-500/30" />
+                </div>
+                <p className="font-serif italic text-ink-700 text-sm leading-relaxed">"{review.text}"</p>
+                <div className="flex items-center justify-between pt-3 border-t border-white/5">
+                  <p className="text-white font-semibold text-xs">{review.name}</p>
+                  <p className="text-ink-600 text-[10px]">{review.time}</p>
                 </div>
               </div>
             ))}
@@ -670,7 +844,7 @@ const HomePage = () => {
       </Section>
 
       {/* ── DELIVERY INFO ────────────────────────────────────────────────── */}
-      <Section className="max-w-7xl mx-auto px-4 sm:px-6 py-20">
+      <Section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 lg:py-20">
         <div className="relative overflow-hidden rounded-3xl card-premium">
           <div className="absolute -top-20 -left-20 w-64 h-64 orb-red rounded-full pointer-events-none" />
           <div className="absolute -bottom-20 -right-20 w-64 h-64 orb-orange rounded-full pointer-events-none" />
@@ -736,14 +910,14 @@ const HomePage = () => {
         </div>
       </Section>
 
-      {/* ── CTA BANNER — warm gradient ──────────────────────────────── */}
+      {/* ── CTA BANNER — responsive padding and title on mobile ──────────────── */}
       <Section className="max-w-7xl mx-auto px-4 sm:px-6 pb-24">
         <motion.div whileInView={{ scale: [0.97, 1] }} viewport={{ once: true }} transition={{ duration: 0.6 }}
-          className="relative overflow-hidden rounded-3xl p-14 text-center animated-gradient"
+          className="relative overflow-hidden rounded-3xl px-6 py-12 sm:p-14 text-center animated-gradient"
           style={{ boxShadow: '0 20px 60px rgba(255,90,0,0.25)' }}>
           <div className="relative">
-            <img src={dfcLogo} alt="DFC" className="w-16 h-16 object-contain mx-auto mb-5 drop-shadow-lg animate-logo-breathe" />
-            <h2 className="font-display text-4xl sm:text-6xl text-white tracking-wide mb-4">READY TO ORDER? 🍽️</h2>
+             <img src={dfcLogo} alt="DFC" className="w-16 h-16 object-contain mx-auto mb-5 drop-shadow-lg animate-logo-breathe" />
+             <h2 className="font-display text-3xl sm:text-6xl text-white tracking-wide mb-4">READY TO ORDER? 🍽️</h2>
             <p className="font-serif italic text-white/90 text-lg md:text-xl mb-10 max-w-xl mx-auto leading-relaxed">
               Delicious food from DFC is just a few taps away. Order now — delivered in under 45 minutes.
             </p>

@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Toaster } from 'react-hot-toast';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
@@ -15,11 +16,61 @@ import TrackOrderPage from './pages/TrackOrderPage';
 import ContactPage from './pages/ContactPage';
 import CheckoutPage from './pages/CheckoutPage';
 
-// Scroll to top on route change
+// Page transition variants — gentle fade + subtle upward slide
+const pageVariants = {
+  initial: { opacity: 0, y: 18 },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.38, ease: [0.22, 1, 0.36, 1] },
+  },
+  exit: {
+    opacity: 0,
+    y: -10,
+    transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+// Wrap each page in the animated container
+const PageWrapper = ({ children }) => (
+  <motion.div
+    variants={pageVariants}
+    initial="initial"
+    animate="animate"
+    exit="exit"
+    style={{ willChange: 'opacity, transform' }}
+  >
+    {children}
+  </motion.div>
+);
+
+// Scroll instantly to top before new page animates in (so animation always starts from top)
 const ScrollToTop = () => {
   const { pathname } = useLocation();
-  useEffect(() => window.scrollTo(0, 0), [pathname]);
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [pathname]);
   return null;
+};
+
+// Inner layout — needs useLocation for AnimatePresence key
+const AnimatedRoutes = () => {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/"         element={<PageWrapper><HomePage /></PageWrapper>} />
+        <Route path="/menu"     element={<PageWrapper><MenuPage /></PageWrapper>} />
+        <Route path="/offers"   element={<PageWrapper><OffersPage /></PageWrapper>} />
+        <Route path="/track"    element={<PageWrapper><TrackOrderPage /></PageWrapper>} />
+        <Route path="/contact"  element={<PageWrapper><ContactPage /></PageWrapper>} />
+        <Route path="/checkout" element={<PageWrapper><CheckoutPage /></PageWrapper>} />
+        {/* Catch-all */}
+        <Route path="*"         element={<PageWrapper><HomePage /></PageWrapper>} />
+      </Routes>
+    </AnimatePresence>
+  );
 };
 
 const Layout = () => {
@@ -46,17 +97,8 @@ const Layout = () => {
       <CartDrawer />
       <StickyOrderButton />
 
-      <main>
-        <Routes>
-          <Route path="/"         element={<HomePage />} />
-          <Route path="/menu"     element={<MenuPage />} />
-          <Route path="/offers"   element={<OffersPage />} />
-          <Route path="/track"    element={<TrackOrderPage />} />
-          <Route path="/contact"  element={<ContactPage />} />
-          <Route path="/checkout" element={<CheckoutPage />} />
-          {/* Catch-all */}
-          <Route path="*" element={<HomePage />} />
-        </Routes>
+      <main style={{ contain: 'layout' }}>
+        <AnimatedRoutes />
       </main>
 
       <Footer />

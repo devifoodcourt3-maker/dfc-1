@@ -158,10 +158,10 @@ const CheckoutPage = () => {
                   placeholder="Your full name" className="input-field" required />
               </div>
 
-              <div>
+               <div>
                 <label className="block text-sm text-ink-600 mb-1.5">Phone Number *</label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-ink-400 text-sm flex items-center gap-1">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-ink-400 text-sm flex items-center gap-1 pointer-events-none">
                     <Phone size={13} /> +91
                   </span>
                   <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })}
@@ -179,7 +179,7 @@ const CheckoutPage = () => {
               {/* Pin exact location on map */}
               {pinnedLocation ? (
                 <button type="button" onClick={() => setShowMapPicker(true)}
-                  className="w-full flex items-center gap-3 rounded-xl px-4 py-3 text-left transition-colors"
+                  className="w-full flex items-center gap-3 rounded-xl px-4 py-3.5 text-left transition-colors"
                   style={{ background: 'rgba(21,128,61,0.06)', border: '1px solid rgba(21,128,61,0.3)' }}>
                   <MapPinned size={17} className="flex-shrink-0" style={{ color: '#15803d' }} />
                   <div className="flex-1 min-w-0">
@@ -189,7 +189,7 @@ const CheckoutPage = () => {
                 </button>
               ) : (
                 <button type="button" onClick={() => setShowMapPicker(true)}
-                  className="w-full flex items-center justify-center gap-2 bg-cream-100 hover:bg-cream-200 border border-ink-900/[0.08] rounded-xl px-4 py-3 text-sm font-medium text-ink-700 transition-colors">
+                  className="w-full flex items-center justify-center gap-2 bg-cream-100 hover:bg-cream-200 border border-ink-900/[0.08] rounded-xl px-4 py-3.5 text-sm font-medium text-ink-700 transition-colors">
                   <MapPinned size={16} style={{ color: '#d97706' }} /> Pin exact location on map
                 </button>
               )}
@@ -211,7 +211,7 @@ const CheckoutPage = () => {
             <div className="card-premium p-6 space-y-3">
               <h3 className="font-bold text-ink-900 flex items-center gap-2"><Tag size={17} style={{ color: '#d97706' }} /> Coupon Code</h3>
               {coupon ? (
-                <div className="flex items-center gap-3 rounded-xl px-4 py-3" style={{ background: 'rgba(21,128,61,0.06)', border: '1px solid rgba(21,128,61,0.3)' }}>
+                <div className="flex items-center gap-3 rounded-xl px-4 py-3.5" style={{ background: 'rgba(21,128,61,0.06)', border: '1px solid rgba(21,128,61,0.3)' }}>
                   <CheckCircle size={16} style={{ color: '#15803d' }} />
                   <div className="flex-1">
                     <p className="font-semibold text-sm" style={{ color: '#15803d' }}>{coupon.code} applied!</p>
@@ -230,7 +230,7 @@ const CheckoutPage = () => {
                     onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleCoupon(); } }}
                     placeholder="Enter coupon code" className="input-field flex-1" />
                   <button type="button" onClick={handleCoupon} disabled={isValidatingCoupon}
-                    className="btn-outline px-5 whitespace-nowrap text-sm py-2.5">
+                    className="btn-outline px-6 rounded-xl border border-ink-900/10 whitespace-nowrap text-sm h-[48px] flex items-center justify-center">
                     {isValidatingCoupon ? '...' : 'Apply'}
                   </button>
                 </div>

@@ -29,7 +29,21 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handler);
   }, []);
 
-  useEffect(() => setMobileOpen(false), [location]);
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location]);
+
+  // Lock body scroll when mobile menu is open to prevent double scroll/clash
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileOpen]);
 
   return (
     <>
@@ -65,10 +79,10 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Cart + mobile trigger */}
+          {/* Cart + mobile trigger with safe 44x44px touch targets */}
           <div className="flex items-center gap-3">
             <button onClick={openCart}
-              className="relative p-2.5 rounded-full bg-black/[0.05] hover:bg-black/[0.08] text-black transition-all border border-black/[0.08]"
+              className="relative w-11 h-11 rounded-full bg-black/[0.05] hover:bg-black/[0.08] text-black transition-all border border-black/[0.08] flex items-center justify-center"
               aria-label="Shopping Cart">
               <ShoppingCart size={19} />
               {count > 0 && (
@@ -81,7 +95,7 @@ const Navbar = () => {
               )}
             </button>
             <button onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden p-2 rounded-full hover:bg-black/[0.05] text-black transition-all"
+              className="md:hidden w-11 h-11 rounded-full hover:bg-black/[0.05] text-black transition-all flex items-center justify-center"
               aria-label="Toggle Menu">
               {mobileOpen ? <X size={20} /> : <Menu size={20} />}
             </button>

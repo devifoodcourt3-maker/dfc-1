@@ -30,10 +30,12 @@ const MenuCard = ({ item, cartRef }) => {
     ? Math.round(((item.mrp - item.price) / item.mrp) * 100) : 0;
 
   return (
-    <motion.div layout initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
       className={`group relative rounded-2xl overflow-hidden flex flex-col card-hover bg-white border shadow-soft
         ${soldOut ? 'opacity-75' : ''}`}
-      style={{ borderColor: 'rgba(255, 90, 0, 0.12)' }}
+      style={{ borderColor: 'rgba(255, 90, 0, 0.12)', willChange: 'transform' }}
       whileHover={soldOut ? {} : { boxShadow: '0 12px 32px rgba(255,90,0,0.18)', borderColor: 'rgba(255,90,0,0.45)' }}
     >
       {/* Image */}
@@ -111,21 +113,23 @@ const MenuCard = ({ item, cartRef }) => {
             </span>
           ) : qty === 0 ? (
             <button onClick={handleAdd} disabled={isAdding}
-              className="flex items-center gap-1 text-xs sm:text-sm font-bold px-3 py-1.5 sm:px-4 sm:py-1.5 rounded-full transition-all active:scale-95 disabled:opacity-60 text-white"
+              className="flex items-center gap-1 text-xs sm:text-sm font-bold px-4 py-2.5 sm:px-4 sm:py-1.5 rounded-full transition-all active:scale-95 disabled:opacity-60 text-white"
               style={{ background: 'linear-gradient(135deg, #ff5a00, #ea580c)', boxShadow: '0 4px 14px rgba(255,90,0,0.25)' }}>
               <Plus size={13} /> Add
             </button>
           ) : (
-            <div className="flex items-center gap-0.5 sm:gap-1 rounded-full p-0.5 sm:p-1 bg-cream-200 border border-white/10">
+            <div className="flex items-center gap-1 rounded-full p-1 bg-cream-200 border border-white/10">
               <button onClick={() => updateQty(item._id, qty - 1)}
-                className="w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-all text-ink-700 hover:bg-white">
-                <Minus size={10} />
+                className="w-9 h-9 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-all text-ink-700 hover:bg-white"
+                aria-label="Decrease Quantity">
+                <Minus size={12} />
               </button>
-              <span className="text-ink-900 font-bold text-xs sm:text-sm w-4 sm:w-5 text-center">{qty}</span>
+              <span className="text-ink-900 font-bold text-xs sm:text-sm w-5 sm:w-4 text-center">{qty}</span>
               <button onClick={handleAdd}
-                className="w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-all text-white active:scale-95"
-                style={{ background: 'linear-gradient(135deg, #ff5a00, #ea580c)' }}>
-                <Plus size={10} />
+                className="w-9 h-9 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-all text-white active:scale-95"
+                style={{ background: 'linear-gradient(135deg, #ff5a00, #ea580c)' }}
+                aria-label="Increase Quantity">
+                <Plus size={12} />
               </button>
             </div>
           )}

@@ -107,8 +107,8 @@ export default {
           '100%': { backgroundPosition: '200% 0' },
         },
         logoBreathe: {
-          '0%,100%': { filter: 'drop-shadow(0 6px 18px rgba(185,28,28,0.25)) drop-shadow(0 0 0px rgba(217,119,6,0))' },
-          '50%':     { filter: 'drop-shadow(0 10px 28px rgba(185,28,28,0.35)) drop-shadow(0 0 22px rgba(217,119,6,0.3))' },
+          '0%,100%': { transform: 'scale(1)',    opacity: '0.92' },
+          '50%':     { transform: 'scale(1.04)', opacity: '1'    },
         },
       },
       backgroundImage: {

@@ -231,7 +231,7 @@ const TrackOrderPage = () => {
           <div>
             <label className="block text-sm text-ink-600 mb-1.5">Phone Number</label>
             <div className="relative">
-              <Phone size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink-400" />
+              <Phone size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink-400 pointer-events-none" />
               <input value={phone}
                 onChange={(e) => { setPhone(e.target.value); if (e.target.value.length === 10) fetchHistory(e.target.value); }}
                 placeholder="10-digit number" className="input-field pl-10" type="tel" maxLength={10} />

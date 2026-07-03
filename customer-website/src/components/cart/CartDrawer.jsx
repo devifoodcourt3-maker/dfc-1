@@ -95,13 +95,15 @@ const CartDrawer = () => {
 
                       <div className="flex items-center gap-1 bg-white rounded-full p-1 border border-ink-900/[0.06]">
                         <button onClick={() => updateQty(item._id, item.quantity - 1)}
-                          className="w-7 h-7 rounded-full hover:bg-red-50 text-ink-500 hover:text-red-600 flex items-center justify-center transition-all">
-                          {item.quantity === 1 ? <Trash2 size={12} className="text-red-500" /> : <Minus size={12} />}
+                          className="w-9 h-9 sm:w-7 sm:h-7 rounded-full hover:bg-red-50 text-ink-500 hover:text-red-600 flex items-center justify-center transition-all"
+                          aria-label="Decrease Quantity">
+                          {item.quantity === 1 ? <Trash2 size={13} className="text-red-500" /> : <Minus size={13} />}
                         </button>
-                        <span className="text-ink-900 font-bold text-sm w-6 text-center">{item.quantity}</span>
+                        <span className="text-ink-900 font-bold text-sm w-7 sm:w-6 text-center">{item.quantity}</span>
                         <button onClick={() => updateQty(item._id, item.quantity + 1)}
-                          className="w-7 h-7 rounded-full hover:bg-orange-50 text-ink-500 hover:text-brand-600 flex items-center justify-center transition-all">
-                          <Plus size={12} />
+                          className="w-9 h-9 sm:w-7 sm:h-7 rounded-full hover:bg-orange-50 text-ink-500 hover:text-brand-600 flex items-center justify-center transition-all"
+                          aria-label="Increase Quantity">
+                          <Plus size={13} />
                         </button>
                       </div>
                     </motion.div>
