@@ -309,7 +309,7 @@ const HomePage = () => {
                      style={{
                        filter: 'drop-shadow(0 20px 50px rgba(0,0,0,0.35)) drop-shadow(0 0 60px rgba(0,0,0,0.85))',
                      }}
-                     threshold={24}
+                     threshold={5}
                    />
                  </motion.div>
 
@@ -402,7 +402,7 @@ const HomePage = () => {
                   style={{
                     filter: 'drop-shadow(0 16px 40px rgba(0,0,0,0.35)) drop-shadow(0 0 40px rgba(0,0,0,0.9))',
                   }}
-                  threshold={24}
+                  threshold={5}
                 />
               </motion.div>
               {/* Smoke puffs */}
