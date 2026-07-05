@@ -3,7 +3,27 @@ import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight, Search, X, Upload, Leaf,
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
-const CATEGORIES = ['Starters', 'Biryani', 'Curries', 'Roti&Naan', 'Rice', 'Sides', 'Desserts', 'Drinks'];
+const CATEGORIES = [
+  'Starters',
+  'Biryani',
+  'Curries',
+  'Roti&Naan',
+  'Tandoori',
+  'Rice',
+  'Fried Rice',
+  'Noodles',
+  'Soups',
+  'Pizza',
+  'Burgers',
+  'Sandwiches',
+  'Sides',
+  'Desserts',
+  'Drinks',
+  'Mocktails',
+  'Milkshakes',
+  'Family Pack',
+  'Take Away'
+];
 const SPICE_LEVELS = ['none', 'mild', 'medium', 'hot', 'extra-hot'];
 
 const EMPTY_FORM = {
