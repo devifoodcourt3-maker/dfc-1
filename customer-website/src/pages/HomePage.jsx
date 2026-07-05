@@ -9,23 +9,25 @@ import {
 import { getMenu, getOffers } from '../services/api';
 import useSettingsStore from '../store/settingsStore';
 import MenuCard from '../components/menu/MenuCard';
-import dfcLogo from '../assets/dfc-logo.png';
-import storefrontPink from '../assets/storefront-pink.jpg';
-import storefrontBlue from '../assets/storefront-blue.jpg';
-import catChicken from '../assets/cat-chicken.png';
-import catBiryani from '../assets/cat-biryani.png';
-import catCurries from '../assets/cat-curries.png';
-import catTandoori from '../assets/cat-tandoori.png';
-import catSweets from '../assets/cat-sweets.png';
-import catDrinks from '../assets/cat-drinks.png';
-import whyFreshly from '../assets/why-freshly-cooked.png';
-import whyDelivery from '../assets/why-fast-delivery.png';
-import whyTracking from '../assets/why-live-tracking.png';
-import whySafety from '../assets/why-food-safety.png';
-import heroBiryani from '../assets/hero-biryani.jpg';
-import heroBiryaniNoBg from '../assets/hero-biryani-nobg.png';
-import heroRockyBg from '../assets/hero-rocky-bg.png';
-import featuredDishesBg from '../assets/featured-dishes-bg.png';
+import cloudinaryAssets from '../cloudinary-assets.json';
+
+const dfcLogo = cloudinaryAssets['dfc-logo.png'];
+const storefrontPink = cloudinaryAssets['storefront-pink.jpg'];
+const storefrontBlue = cloudinaryAssets['storefront-blue.jpg'];
+const catChicken = cloudinaryAssets['cat-chicken.png'];
+const catBiryani = cloudinaryAssets['cat-biryani.png'];
+const catCurries = cloudinaryAssets['cat-curries.png'];
+const catTandoori = cloudinaryAssets['cat-tandoori.png'];
+const catSweets = cloudinaryAssets['cat-sweets.png'];
+const catDrinks = cloudinaryAssets['cat-drinks.png'];
+const whyFreshly = cloudinaryAssets['why-freshly-cooked.png'];
+const whyDelivery = cloudinaryAssets['why-fast-delivery.png'];
+const whyTracking = cloudinaryAssets['why-live-tracking.png'];
+const whySafety = cloudinaryAssets['why-food-safety.png'];
+const heroBiryani = cloudinaryAssets['hero-biryani.jpg'];
+const heroBiryaniNoBg = cloudinaryAssets['hero-biryani-nobg.png'];
+const heroRockyBg = cloudinaryAssets['hero-rocky-bg.png'];
+const featuredDishesBg = cloudinaryAssets['featured-dishes-bg.png'];
 
 // ── Canvas-based Black Background Remover (deferred to idle time) ────────────────
 const TransparentImage = ({ src, alt, className, style, threshold = 22 }) => {

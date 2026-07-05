@@ -94,6 +94,16 @@ const OrderCard = ({ order, isNew = false }) => {
   const activeRiders = riders.filter((r) => r.isActive);
   const hasLocation = order.customer?.location?.lat != null && order.customer?.location?.lng != null;
 
+  // Derive live status for each rider (mirrors RidersPage logic)
+  const getRiderStatus = (r) => {
+    if (r.riderStatus) return r.riderStatus;
+    if (!r.isActive) return 'offline';
+    if (r.activeOrders > 0) return 'on_delivery';
+    return 'available';
+  };
+
+  const RIDER_STATUS_LABEL = { available: '🟢', on_delivery: '🟠 Busy', offline: '🔴 Offline' };
+
   return (
     <>
     <motion.div
@@ -229,16 +239,32 @@ const OrderCard = ({ order, isNew = false }) => {
               <select value={selectedRiderId} onChange={(e) => setSelectedRiderId(e.target.value)}
                 className="input text-sm flex-1">
                 <option value="">Select delivery boy...</option>
-                {activeRiders.map((r) => (
-                  <option key={r._id} value={r._id}>
-                    {r.name}{r.activeOrders > 0 ? ` (${r.activeOrders} active)` : ''}
-                  </option>
-                ))}
+                {activeRiders.map((r) => {
+                  const rStatus = getRiderStatus(r);
+                  const unavailable = rStatus !== 'available';
+                  return (
+                    <option key={r._id} value={r._id} disabled={unavailable}
+                      style={unavailable ? { color: '#9ca3af' } : {}}>
+                      {RIDER_STATUS_LABEL[rStatus] || '🟢'} {r.name}
+                      {rStatus === 'on_delivery' ? ' — On Delivery' : ''}
+                      {rStatus === 'offline' ? ' — Offline' : ''}
+                    </option>
+                  );
+                })}
               </select>
-              <button onClick={handleAssign} disabled={isUpdating || !selectedRiderId}
-                className="btn-primary text-sm py-2.5 px-3 disabled:opacity-50">
-                Assign
-              </button>
+              <div className="relative flex-shrink-0" title={
+                selectedRiderId && getRiderStatus(activeRiders.find(r => r._id === selectedRiderId) || {}) !== 'available'
+                  ? 'This rider is already delivering another order.'
+                  : undefined
+              }>
+                <button onClick={handleAssign}
+                  disabled={isUpdating || !selectedRiderId || (
+                    selectedRiderId && getRiderStatus(activeRiders.find(r => r._id === selectedRiderId) || {}) !== 'available'
+                  )}
+                  className="btn-primary text-sm py-2.5 px-3 disabled:opacity-50">
+                  Assign
+                </button>
+              </div>
               <button onClick={() => setShowAssign(false)} className="p-2.5 hover:bg-cream-200 rounded-lg text-ink-500">
                 <X size={15} />
               </button>

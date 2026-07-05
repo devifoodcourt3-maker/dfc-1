@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion';
 import { Phone, Mail, MapPin, Clock, Instagram, Facebook, MessageCircle } from 'lucide-react';
 import useSettingsStore from '../store/settingsStore';
-import menuDoodleBg from '../assets/menu-doodle-bg.png';
-import floatingVeggies from '../assets/floating-veggies.png';
+import cloudinaryAssets from '../cloudinary-assets.json';
+
+const menuDoodleBg = cloudinaryAssets['menu-doodle-bg.png'];
+const floatingVeggies = cloudinaryAssets['floating-veggies.png'];
 import { useEffect, useState } from 'react';
 
 // ── Canvas-based Black Background Remover ────────────────────────────────────

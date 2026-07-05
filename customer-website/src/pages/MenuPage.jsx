@@ -3,7 +3,9 @@ import { Search, X, Leaf } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { getMenu } from '../services/api';
 import MenuCard from '../components/menu/MenuCard';
-import menuDoodleBg from '../assets/menu-doodle-bg.png';
+import cloudinaryAssets from '../cloudinary-assets.json';
+
+const menuDoodleBg = cloudinaryAssets['menu-doodle-bg.png'];
 
 const MenuPage = () => {
   const cartRef = useRef(null);

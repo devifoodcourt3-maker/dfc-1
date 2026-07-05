@@ -95,6 +95,16 @@ const emitSettingsUpdate = (restaurantId) => {
   io.to(`restaurant:${restaurantId}`).emit('settings-updated', { restaurantId });
 };
 
+/**
+ * Emit rider availability status change to the restaurant dashboard.
+ * status: 'available' | 'on_delivery' | 'offline'
+ * activeOrder: { orderId, assignedAt } or null
+ */
+const emitRiderStatusUpdate = (restaurantId, riderId, status, activeOrder = null) => {
+  if (!io) return;
+  io.to(`restaurant:${restaurantId}`).emit('rider-status-update', { riderId, status, activeOrder });
+};
+
 const getIO = () => {
   if (!io) throw new Error('Socket.IO not initialized');
   return io;
@@ -107,5 +117,6 @@ module.exports = {
   emitOrderAcknowledged,
   emitOrderAssigned,
   emitSettingsUpdate,
+  emitRiderStatusUpdate,
   getIO,
 };

@@ -3,8 +3,10 @@ import { motion } from 'framer-motion';
 import { Tag, Gift, Zap, Copy, Check } from 'lucide-react';
 import { getOffers } from '../services/api';
 import toast from 'react-hot-toast';
-import menuDoodleBg from '../assets/menu-doodle-bg.png';
-import floatingVeggies from '../assets/floating-veggies.png';
+import cloudinaryAssets from '../cloudinary-assets.json';
+
+const menuDoodleBg = cloudinaryAssets['menu-doodle-bg.png'];
+const floatingVeggies = cloudinaryAssets['floating-veggies.png'];
 
 // ── Canvas-based Black Background Remover ────────────────────────────────────
 const TransparentImage = ({ src, alt, className, style, threshold = 22 }) => {

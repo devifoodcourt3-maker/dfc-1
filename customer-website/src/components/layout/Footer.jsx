@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Clock, Instagram, Facebook } from 'lucide-react';
-import dfcLogo from '../../assets/dfc-logo.png';
+import cloudinaryAssets from '../../cloudinary-assets.json';
+
+const dfcLogo = cloudinaryAssets['dfc-logo.png'];
 import useSettingsStore from '../../store/settingsStore';
 
 const Footer = () => {

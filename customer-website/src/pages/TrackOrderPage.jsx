@@ -7,11 +7,14 @@ import {
 import { io } from 'socket.io-client';
 import { trackOrder, getOrderHistory } from '../services/api';
 import { isUnseenCancellation, markOrderStatusSeen } from '../utils/orderNotifications';
+import { playCancelAlert } from '../utils/cancelAlert';
 import useNotificationStore from '../store/notificationStore';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
-import menuDoodleBg from '../assets/menu-doodle-bg.png';
-import floatingVeggies from '../assets/floating-veggies.png';
+import cloudinaryAssets from '../cloudinary-assets.json';
+
+const menuDoodleBg = cloudinaryAssets['menu-doodle-bg.png'];
+const floatingVeggies = cloudinaryAssets['floating-veggies.png'];
 
 // ── Canvas-based Black Background Remover ────────────────────────────────────
 const TransparentImage = ({ src, alt, className, style, threshold = 22 }) => {
@@ -121,6 +124,7 @@ const TrackOrderPage = () => {
         setHistory((prev) => prev.map((o) => (o.orderId === oid ? { ...o, status, assignedRider: updatedOrder?.assignedRider ?? o.assignedRider } : o)));
 
         if (status === 'cancelled') {
+          playCancelAlert();
           toast.error(`Order ${oid} was cancelled by the restaurant`, { icon: '⚠️', duration: 6000 });
         } else if (isNewlyAssignedRef.current) {
           toast.success(`${updatedOrder.assignedRider.name} will deliver your order!`, { icon: '🛵', duration: 4000 });
@@ -148,9 +152,10 @@ const TrackOrderPage = () => {
       const data = await getOrderHistory(phoneNumber);
       setHistory(data.orders || []);
 
-      // Surface a toast for any cancellations the customer hasn't seen yet
+      // Surface a toast + alert sound for any cancellations the customer hasn't seen yet
       const newlyCancelled = (data.orders || []).filter(isUnseenCancellation);
       if (newlyCancelled.length > 0) {
+        playCancelAlert();
         toast.error(
           newlyCancelled.length === 1
             ? `Order ${newlyCancelled[0].orderId} was cancelled`

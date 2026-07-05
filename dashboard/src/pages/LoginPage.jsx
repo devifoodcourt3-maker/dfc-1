@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 import useAuthStore from '../store/authStore';
 import dfcLogo from '../assets/dfc-logo.png';
+import { unlockAudio } from '../utils/audioContext';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -15,6 +16,9 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    // Unlock the AudioContext on this user gesture so the order buzzer
+    // works automatically without any extra clicks after login.
+    unlockAudio();
     const result = await login(email, password);
     if (result.success) {
       navigate('/orders', { replace: true });

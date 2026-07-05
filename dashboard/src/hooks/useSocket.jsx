@@ -1,8 +1,10 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { io } from 'socket.io-client';
 import useOrdersStore from '../store/ordersStore';
+import useRidersStore from '../store/ridersStore';
 import useAuthStore from '../store/authStore';
 import toast from 'react-hot-toast';
+import { getAudioContext } from '../utils/audioContext';
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
 const ALERT_INTERVAL_MS = 4000;
@@ -14,6 +16,7 @@ let socketInstance = null;
 const useSocket = () => {
   const { restaurant } = useAuthStore();
   const { addOrder, updateOrderInList, removeAcknowledged, unacknowledgedIds } = useOrdersStore();
+  const { updateRiderStatus } = useRidersStore();
 
   const audioRef = useRef(null);
   const alertIntervalRef = useRef(null);
@@ -22,42 +25,52 @@ const useSocket = () => {
 
   // ── Audio ──────────────────────────────────────────────────────────────────
   const createAlertAudio = useCallback(() => {
-    // Web Audio API low-pitch alarm buzzer
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    
-    const playLowBuzz = (startTime, duration) => {
-      // Detune two oscillators at 100Hz and 102Hz for a deep, vibrating alarm effect
-      const osc1 = ctx.createOscillator();
-      const osc2 = ctx.createOscillator();
-      const gainNode = ctx.createGain();
-      
-      osc1.connect(gainNode);
-      osc2.connect(gainNode);
-      gainNode.connect(ctx.destination);
-      
-      osc1.type = 'sawtooth';
-      osc1.frequency.setValueAtTime(100, startTime);
-      
-      osc2.type = 'sawtooth';
-      osc2.frequency.setValueAtTime(102, startTime);
-      
-      // Volume envelope: smooth rise, hold, and rapid fade
-      gainNode.gain.setValueAtTime(0.001, startTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.25, startTime + 0.05);
-      gainNode.gain.setValueAtTime(0.25, startTime + duration - 0.05);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
-      
-      osc1.start(startTime);
-      osc1.stop(startTime + duration);
-      osc2.start(startTime);
-      osc2.stop(startTime + duration);
+    const ctx = getAudioContext();
+
+    const scheduleBuzzes = () => {
+      const playLowBuzz = (startTime, duration) => {
+        // Detune two oscillators at 100 Hz and 102 Hz for a deep vibrating alarm
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+
+        osc1.connect(gainNode);
+        osc2.connect(gainNode);
+        gainNode.connect(ctx.destination);
+
+        osc1.type = 'sawtooth';
+        osc1.frequency.setValueAtTime(100, startTime);
+
+        osc2.type = 'sawtooth';
+        osc2.frequency.setValueAtTime(102, startTime);
+
+        // Volume envelope: smooth rise, hold, rapid fade
+        gainNode.gain.setValueAtTime(0.001, startTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.25, startTime + 0.05);
+        gainNode.gain.setValueAtTime(0.25, startTime + duration - 0.05);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+
+        osc1.start(startTime);
+        osc1.stop(startTime + duration);
+        osc2.start(startTime);
+        osc2.stop(startTime + duration);
+      };
+
+      // Play 3 alarm buzzes: "bzz... bzz... bzz..."
+      playLowBuzz(ctx.currentTime, 0.25);
+      playLowBuzz(ctx.currentTime + 0.35, 0.25);
+      playLowBuzz(ctx.currentTime + 0.70, 0.25);
     };
 
-    // Play 3 low-pitched alarm buzzes: "bzz... bzz... bzz..."
-    playLowBuzz(ctx.currentTime, 0.25);
-    playLowBuzz(ctx.currentTime + 0.35, 0.25);
-    playLowBuzz(ctx.currentTime + 0.70, 0.25);
+    // CRITICAL: resume() is async — schedule audio only AFTER context is running.
+    // Previously audio was scheduled before resume completed → silent first buzz.
+    if (ctx.state === 'running') {
+      scheduleBuzzes();
+    } else {
+      ctx.resume().then(scheduleBuzzes);
+    }
   }, []);
+
 
   // ── Tab title flash ────────────────────────────────────────────────────────
   const startTitleFlash = useCallback(() => {
@@ -168,6 +181,11 @@ const useSocket = () => {
       removeAcknowledged(orderId);
     });
 
+    // Real-time rider availability badge updates
+    socket.on('rider-status-update', ({ riderId, status, activeOrder }) => {
+      updateRiderStatus(riderId, status, activeOrder);
+    });
+
     socket.on('disconnect', () => {
       console.warn('Dashboard socket disconnected');
     });
@@ -176,6 +194,7 @@ const useSocket = () => {
       socket.off('new-order');
       socket.off('order-status-update');
       socket.off('order-acknowledged');
+      socket.off('rider-status-update');
       socket.off('connect');
       socket.off('disconnect');
     };

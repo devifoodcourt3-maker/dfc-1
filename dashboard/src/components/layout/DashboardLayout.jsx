@@ -1,14 +1,31 @@
 import { Outlet } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import useSocket from '../../hooks/useSocket';
 import useOrdersStore from '../../store/ordersStore';
-import { Wifi, WifiOff, Bell } from 'lucide-react';
+import { unlockAudio } from '../../utils/audioContext';
+import { Bell } from 'lucide-react';
 
 const DashboardLayout = () => {
   useSocket(); // Initialize socket + notifications
   const { unacknowledgedIds } = useOrdersStore();
   const [socketConnected, setSocketConnected] = useState(true);
+
+  // Unlock AudioContext on the very first interaction inside the dashboard.
+  // This covers the page-refresh case where the login page is skipped.
+  useEffect(() => {
+    const unlock = () => {
+      unlockAudio();
+      window.removeEventListener('click', unlock, true);
+      window.removeEventListener('keydown', unlock, true);
+    };
+    window.addEventListener('click', unlock, true);
+    window.addEventListener('keydown', unlock, true);
+    return () => {
+      window.removeEventListener('click', unlock, true);
+      window.removeEventListener('keydown', unlock, true);
+    };
+  }, []);
 
   return (
     <div className="flex h-screen bg-cream-50 overflow-hidden">
@@ -46,3 +63,4 @@ const DashboardLayout = () => {
 };
 
 export default DashboardLayout;
+

@@ -4,7 +4,9 @@ import { ShoppingCart, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import useCartStore from '../../store/cartStore';
 import useNotificationStore from '../../store/notificationStore';
-import dfcLogo from '../../assets/dfc-logo.png';
+import cloudinaryAssets from '../../cloudinary-assets.json';
+
+const dfcLogo = cloudinaryAssets['dfc-logo.png'];
 
 const NAV_LINKS = [
   { to: '/',        label: 'Home' },

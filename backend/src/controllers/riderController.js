@@ -2,7 +2,7 @@ const DeliveryBoy = require('../models/DeliveryBoy');
 const Order = require('../models/Order');
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
-const { emitOrderAssigned, emitOrderStatusUpdate } = require('../config/socket');
+const { emitOrderAssigned, emitOrderStatusUpdate, emitRiderStatusUpdate } = require('../config/socket');
 
 // ─── Admin: List delivery boys ────────────────────────────────────────────────
 
@@ -23,9 +23,29 @@ exports.getRiders = catchAsync(async (req, res, next) => {
   const countMap = {};
   activeCounts.forEach((c) => (countMap[c._id.toString()] = c.count));
 
+  // For riders who are busy, fetch the most recent active order so the
+  // dashboard card can immediately show order ID + assigned time on page load.
+  const busyRiderIds = Object.keys(countMap);
+  const activeOrderMap = {};
+  if (busyRiderIds.length > 0) {
+    const activeOrders = await Order.find({
+      assignedRider: { $in: busyRiderIds },
+      status: { $in: ['ready', 'out_for_delivery'] },
+    })
+      .select('assignedRider orderId assignedAt status')
+      .sort({ assignedAt: -1 });
+    activeOrders.forEach((o) => {
+      const key = o.assignedRider.toString();
+      if (!activeOrderMap[key]) {
+        activeOrderMap[key] = { orderId: o.orderId, assignedAt: o.assignedAt, status: o.status };
+      }
+    });
+  }
+
   const ridersWithLoad = riders.map((r) => ({
     ...r.toJSON(),
     activeOrders: countMap[r._id.toString()] || 0,
+    activeOrder: activeOrderMap[r._id.toString()] || null,
   }));
 
   res.status(200).json({ success: true, data: { riders: ridersWithLoad } });
@@ -112,6 +132,13 @@ exports.assignOrder = catchAsync(async (req, res, next) => {
   emitOrderAssigned(rider._id.toString(), order.toJSON());
   emitOrderStatusUpdate(restaurantId.toString(), order.orderId, order.status, order.toJSON());
 
+  // Notify the dashboard that this rider is now On Delivery
+  emitRiderStatusUpdate(restaurantId.toString(), rider._id.toString(), 'on_delivery', {
+    orderId: order.orderId,
+    assignedAt: order.assignedAt,
+    status: order.status,
+  });
+
   res.status(200).json({
     success: true,
     message: `Order assigned to ${rider.name}`,
@@ -127,12 +154,24 @@ exports.unassignOrder = catchAsync(async (req, res, next) => {
   const order = await Order.findOne({ _id: req.params.id, restaurantId });
   if (!order) return next(new AppError('Order not found', 404));
 
+  const prevRiderId = order.assignedRider?.toString();
+
   order.assignedRider = null;
   order.riderName = '';
   if (order.status === 'out_for_delivery') order.status = 'ready';
   await order.save();
 
   emitOrderStatusUpdate(restaurantId.toString(), order.orderId, order.status, order.toJSON());
+
+  // Check if this rider still has other active orders; if not, mark Available
+  if (prevRiderId) {
+    const remaining = await Order.countDocuments({
+      assignedRider: prevRiderId,
+      status: { $in: ['ready', 'out_for_delivery'] },
+    });
+    const riderStatus = remaining > 0 ? 'on_delivery' : 'available';
+    emitRiderStatusUpdate(restaurantId.toString(), prevRiderId, riderStatus, null);
+  }
 
   res.status(200).json({ success: true, data: { order } });
 });

@@ -6,7 +6,7 @@ const DeliveryBoy = require('../models/DeliveryBoy');
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
 const generateOrderId = require('../utils/generateOrderId');
-const { emitNewOrder, emitOrderStatusUpdate, emitOrderAcknowledged } = require('../config/socket');
+const { emitNewOrder, emitOrderStatusUpdate, emitOrderAcknowledged, emitRiderStatusUpdate } = require('../config/socket');
 
 // ─── Public: Place Order ──────────────────────────────────────────────────────
 
@@ -249,7 +249,22 @@ exports.updateOrderStatus = catchAsync(async (req, res, next) => {
     emitOrderAcknowledged(restaurantId.toString(), order._id.toString());
   }
 
-  emitOrderStatusUpdate(restaurantId.toString(), order.orderId, status, (await order.populate('assignedRider', 'name phone vehicleNumber')).toJSON());
+  await order.populate('assignedRider', 'name phone vehicleNumber');
+  emitOrderStatusUpdate(restaurantId.toString(), order.orderId, status, order.toJSON());
+
+  // When an order is cancelled and had an assigned rider, check if that rider
+  // still has other active deliveries; if not, flip them back to Available.
+  if (status === 'cancelled' && order.assignedRider) {
+    const riderId = typeof order.assignedRider === 'object'
+      ? order.assignedRider._id.toString()
+      : order.assignedRider.toString();
+    const remaining = await Order.countDocuments({
+      assignedRider: riderId,
+      status: { $in: ['ready', 'out_for_delivery'] },
+    });
+    const riderStatus = remaining > 0 ? 'on_delivery' : 'available';
+    emitRiderStatusUpdate(restaurantId.toString(), riderId, riderStatus, null);
+  }
 
   res.status(200).json({
     success: true,
@@ -353,6 +368,14 @@ exports.finishOrder = catchAsync(async (req, res, next) => {
   await DeliveryBoy.findByIdAndUpdate(riderId, { $inc: { totalDeliveries: 1 } });
 
   emitOrderStatusUpdate(order.restaurantId.toString(), order.orderId, order.status, order.toJSON());
+
+  // Rider has finished — check if they still have other active orders
+  const remaining = await Order.countDocuments({
+    assignedRider: riderId,
+    status: { $in: ['ready', 'out_for_delivery'] },
+  });
+  const riderStatus = remaining > 0 ? 'on_delivery' : 'available';
+  emitRiderStatusUpdate(order.restaurantId.toString(), riderId.toString(), riderStatus, null);
 
   res.status(200).json({ success: true, message: 'Order delivered! 🎉', data: { order } });
 });
