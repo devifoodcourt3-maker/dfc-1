@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import useSocket from '../../hooks/useSocket';
 import useOrdersStore from '../../store/ordersStore';
-import { unlockAudio, getAudioContext } from '../../utils/audioContext';
+import { unlockAudio, getAudioContext, playUnlockChirp } from '../../utils/audioContext';
 import { Bell, VolumeX } from 'lucide-react';
 
 const DashboardLayout = () => {
@@ -54,6 +54,7 @@ const DashboardLayout = () => {
       const ctx = getAudioContext();
       if (ctx.state === 'running') {
         setAudioSuspended(false);
+        playUnlockChirp();
       }
     });
   };
