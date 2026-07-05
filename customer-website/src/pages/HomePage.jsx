@@ -10,6 +10,7 @@ import { getMenu, getOffers } from '../services/api';
 import useSettingsStore from '../store/settingsStore';
 import MenuCard from '../components/menu/MenuCard';
 import cloudinaryAssets from '../cloudinary-assets.json';
+import heroBiryaniNoBg from '../assets/hero-biryani-nobg.png';
 
 const dfcLogo = cloudinaryAssets['dfc-logo.png'];
 const storefrontPink = cloudinaryAssets['storefront-pink.jpg'];
@@ -25,7 +26,6 @@ const whyDelivery = cloudinaryAssets['why-fast-delivery.png'];
 const whyTracking = cloudinaryAssets['why-live-tracking.png'];
 const whySafety = cloudinaryAssets['why-food-safety.png'];
 const heroBiryani = cloudinaryAssets['hero-biryani.jpg'];
-const heroBiryaniNoBg = cloudinaryAssets['hero-biryani-nobg.png'];
 const heroRockyBg = cloudinaryAssets['hero-rocky-bg.png'];
 const featuredDishesBg = cloudinaryAssets['featured-dishes-bg.png'];
 
