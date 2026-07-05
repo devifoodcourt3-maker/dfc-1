@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Search, X, Leaf } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { getMenu } from '../services/api';
@@ -9,12 +10,22 @@ const menuDoodleBg = cloudinaryAssets['menu-doodle-bg.png'];
 
 const MenuPage = () => {
   const cartRef = useRef(null);
+  const location = useLocation();
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [vegOnly, setVegOnly] = useState(false);
+
+  useEffect(() => {
+    const cat = new URLSearchParams(location.search).get('cat');
+    if (cat) {
+      setActiveCategory(cat);
+    } else {
+      setActiveCategory('All');
+    }
+  }, [location.search]);
 
   useEffect(() => {
     const cartEl = document.querySelector('[data-cart-icon]');
