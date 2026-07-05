@@ -11,6 +11,7 @@ import useSettingsStore from '../store/settingsStore';
 import MenuCard from '../components/menu/MenuCard';
 import cloudinaryAssets from '../cloudinary-assets.json';
 import heroBiryaniNoBg from '../assets/hero-biryani-nobg.jpg';
+import popularCategoriesBg from '../assets/popular-categories-bg.jpg';
 
 const dfcLogo = cloudinaryAssets['dfc-logo.png'];
 const storefrontPink = cloudinaryAssets['storefront-pink.jpg'];
@@ -547,62 +548,74 @@ const HomePage = () => {
       )}
 
       {/* ── CATEGORIES GRID ─────────────────────────────────────────────── */}
-      <Section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 lg:py-20">
-        <div className="text-center mb-12">
-          <div className="flex items-center gap-2 mb-2 justify-center">
-            <span className="w-8 h-px bg-brand-500"></span>
-            <span className="text-[10px] font-extrabold tracking-[0.25em] uppercase text-brand-500">Explore Our Menu</span>
-            <span className="w-8 h-px bg-brand-500"></span>
+      <div className="relative w-full overflow-hidden border-t border-b"
+        style={{
+          backgroundImage: `url(${popularCategoriesBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          borderColor: 'rgba(255, 255, 255, 0.05)'
+        }}>
+        {/* Subtle dark overlay for readability */}
+        <div className="absolute inset-0 bg-black/55 pointer-events-none" />
+
+        <Section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-12 lg:py-20">
+          <div className="text-center mb-12">
+            <div className="flex items-center gap-2 mb-2 justify-center">
+              <span className="w-8 h-px bg-brand-500"></span>
+              <span className="text-[10px] font-extrabold tracking-[0.25em] uppercase text-brand-500">Explore Our Menu</span>
+              <span className="w-8 h-px bg-brand-500"></span>
+            </div>
+            <h2 className="section-heading mb-3 text-white">Popular Categories</h2>
+            <p className="section-sub mx-auto text-center text-ink-600">Browse our most loved sections from both outlets</p>
           </div>
-          <h2 className="section-heading mb-3 text-white">Popular Categories</h2>
-          <p className="section-sub mx-auto text-center text-ink-600">Browse our most loved sections from both outlets</p>
-        </div>
-        <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-5">
-          {[
-            { icon: ChefHat, label: 'Chicken',  cat: 'Starters', img: catChicken,  bg: 'rgba(255,90,0,0.02)', border: 'rgba(255,255,255,0.06)',  accent: '#ff5a00' },
-            { icon: Utensils, label: 'Biryani',  cat: 'Biryani',  img: catBiryani,  bg: 'rgba(255,90,0,0.02)', border: 'rgba(255,255,255,0.06)',   accent: '#ff5a00' },
-            { icon: Soup, label: 'Curries',  cat: 'Curries',  img: catCurries,  bg: 'rgba(255,90,0,0.02)', border: 'rgba(255,255,255,0.06)',   accent: '#ff5a00' },
-            { icon: Flame, label: 'Tandoori', cat: 'Tandoori', img: catTandoori, bg: 'rgba(255,90,0,0.02)', border: 'rgba(255,255,255,0.06)',  accent: '#ff5a00' },
-            { icon: Cookie, label: 'Sweets',   cat: 'Desserts', img: catSweets,   bg: 'rgba(255,90,0,0.02)', border: 'rgba(255,255,255,0.06)',   accent: '#ff5a00' },
-            { icon: Sparkles, label: 'Drinks',   cat: 'Drinks',   img: catDrinks,   bg: 'rgba(255,90,0,0.02)', border: 'rgba(255,255,255,0.06)',   accent: '#ff5a00' },
-          ].map(({ icon: Icon, label, cat, img, bg, border, accent }, i) => (
-            <motion.div key={cat} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }} transition={{ delay: i * 0.05, duration: 0.4, ease: 'easeOut' }}>
-              <Link to={`/menu?cat=${cat}`}
-                style={{ background: bg, border: `1.5px solid ${border}` }}
-                className="group flex flex-col items-center rounded-2xl overflow-hidden hover:shadow-soft-lg transition-all duration-300 card-hover text-center bg-[#161413]">
-                {/* Image */}
-                <div className="w-full aspect-square overflow-hidden relative">
-                  <img
-                    src={img}
-                    alt={label}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  {/* Icon badge */}
-                  <span
-                    className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full shadow-md"
-                    style={{ background: 'rgba(22,20,19,0.92)', backdropFilter: 'blur(4px)', color: accent }}
-                  >
-                    <Icon size={14} />
-                  </span>
-                </div>
-                {/* Label */}
-                <div className="w-full px-3 py-3">
-                  <span
-                    className="text-sm font-bold tracking-wide transition-colors duration-200"
-                    style={{ color: '#faf8f6' }}
-                  >
-                    {label}
-                  </span>
-                  <p className="text-ink-500 text-xs mt-0.5 font-medium group-hover:text-brand-500 transition-colors">Explore →</p>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-      </Section>
+          <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-5">
+            {[
+              { icon: ChefHat, label: 'Chicken',  cat: 'Starters', img: catChicken,  bg: 'rgba(255,90,0,0.02)', border: 'rgba(255,255,255,0.06)',  accent: '#ff5a00' },
+              { icon: Utensils, label: 'Biryani',  cat: 'Biryani',  img: catBiryani,  bg: 'rgba(255,90,0,0.02)', border: 'rgba(255,255,255,0.06)',   accent: '#ff5a00' },
+              { icon: Soup, label: 'Curries',  cat: 'Curries',  img: catCurries,  bg: 'rgba(255,90,0,0.02)', border: 'rgba(255,255,255,0.06)',   accent: '#ff5a00' },
+              { icon: Flame, label: 'Tandoori', cat: 'Tandoori', img: catTandoori, bg: 'rgba(255,90,0,0.02)', border: 'rgba(255,255,255,0.06)',  accent: '#ff5a00' },
+              { icon: Cookie, label: 'Sweets',   cat: 'Desserts', img: catSweets,   bg: 'rgba(255,90,0,0.02)', border: 'rgba(255,255,255,0.06)',   accent: '#ff5a00' },
+              { icon: Sparkles, label: 'Drinks',   cat: 'Drinks',   img: catDrinks,   bg: 'rgba(255,90,0,0.02)', border: 'rgba(255,255,255,0.06)',   accent: '#ff5a00' },
+            ].map(({ icon: Icon, label, cat, img, bg, border, accent }, i) => (
+              <motion.div key={cat} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ delay: i * 0.05, duration: 0.4, ease: 'easeOut' }}>
+                <Link to={`/menu?cat=${cat}`}
+                  style={{ background: bg, border: `1.5px solid ${border}` }}
+                  className="group flex flex-col items-center rounded-2xl overflow-hidden hover:shadow-soft-lg transition-all duration-300 card-hover text-center bg-[#161413]">
+                  {/* Image */}
+                  <div className="w-full aspect-square overflow-hidden relative">
+                    <img
+                      src={img}
+                      alt={label}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    {/* Icon badge */}
+                    <span
+                      className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full shadow-md"
+                      style={{ background: 'rgba(22,20,19,0.92)', backdropFilter: 'blur(4px)', color: accent }}
+                    >
+                      <Icon size={14} />
+                    </span>
+                  </div>
+                  {/* Label */}
+                  <div className="w-full px-3 py-3">
+                    <span
+                      className="text-sm font-bold tracking-wide transition-colors duration-200"
+                      style={{ color: '#faf8f6' }}
+                    >
+                      {label}
+                    </span>
+                    <p className="text-ink-500 text-xs mt-0.5 font-medium group-hover:text-brand-500 transition-colors">Explore →</p>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </Section>
+      </div>
 
       {/* ── VISIT OUR OUTLETS ────────────────────────────────────────── */}
       <Section className="max-w-5xl mx-auto px-4 sm:px-6 py-12 lg:py-20">
