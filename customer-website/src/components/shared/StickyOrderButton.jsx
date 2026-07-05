@@ -30,18 +30,18 @@ const StickyOrderButton = () => {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 80, opacity: 0 }}
           transition={{ type: 'spring', damping: 22, stiffness: 300 }}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 md:hidden"
+          className="fixed bottom-6 right-6 z-40 md:hidden"
         >
           <Link
             to="/checkout"
-            className="flex items-center gap-3 text-white
-                       font-bold px-6 py-4 rounded-full shadow-red-glow
+            className="flex items-center gap-2 text-white
+                       text-xs font-semibold px-4 py-2.5 rounded-full shadow-orange-glow
                        active:scale-95 transition-all duration-200"
-            style={{ background: 'linear-gradient(135deg, #b91c1c 0%, #d97706 100%)' }}
+            style={{ background: 'linear-gradient(135deg, #ff5a00 0%, #ea580c 100%)' }}
           >
-            <ShoppingBag size={20} />
-            <span>{count} item{count > 1 ? 's' : ''}</span>
-            <span className="w-px h-4 bg-white/30" />
+            <ShoppingBag size={15} />
+            <span>{count} {count > 1 ? 'items' : 'item'}</span>
+            <span className="w-px h-3.5 bg-white/20" />
             <span>₹{sub}</span>
           </Link>
         </motion.div>

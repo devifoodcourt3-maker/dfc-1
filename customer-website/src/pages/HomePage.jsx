@@ -12,6 +12,7 @@ import MenuCard from '../components/menu/MenuCard';
 import cloudinaryAssets from '../cloudinary-assets.json';
 import heroBiryaniNoBg from '../assets/hero-biryani-nobg.jpg';
 import popularCategoriesBg from '../assets/popular-categories-bg.jpg';
+import catPizza from '../assets/cat-pizza.png';
 
 const dfcLogo = cloudinaryAssets['dfc-logo.png'];
 const storefrontPink = cloudinaryAssets['storefront-pink.jpg'];
@@ -237,8 +238,8 @@ const HomePage = () => {
                 
                 {isOpen !== null && (
                   <motion.span initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-                    className="inline-flex items-center gap-2 bg-ink-100/30 border border-white/10 text-xs font-semibold px-4 py-1.5 rounded-full shadow-soft backdrop-blur-md">
-                    <span className="w-2 h-2 rounded-full animate-pulse"
+                    className="inline-flex items-center gap-1.5 bg-ink-100/20 border border-white/10 text-[10px] font-medium px-2.5 py-0.5 rounded-full shadow-soft backdrop-blur-md">
+                    <span className="w-1.5 h-1.5 rounded-full animate-pulse"
                       style={{ background: isOpen ? '#22c55e' : '#ef4444' }} />
                     <span style={{ color: isOpen ? '#faf8f6' : '#ef4444' }}>
                       {isOpen ? 'Now accepting online orders' : 'Currently closed — check back soon!'}
@@ -359,9 +360,9 @@ const HomePage = () => {
           {/* Status badge — full-width pill */}
           {isOpen !== null && (
             <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-              className="mb-3 px-4">
-              <span className="inline-flex items-center gap-1.5 bg-black/50 border border-white/10 text-[11px] font-semibold px-4 py-1.5 rounded-full backdrop-blur-md w-full justify-center">
-                <span className="w-2 h-2 rounded-full animate-pulse flex-shrink-0"
+              className="mb-3 px-4 text-left">
+              <span className="inline-flex items-center gap-1 bg-black/50 border border-white/10 text-[10px] font-medium px-2.5 py-0.5 rounded-full backdrop-blur-md">
+                <span className="w-1.5 h-1.5 rounded-full animate-pulse flex-shrink-0"
                   style={{ background: isOpen ? '#22c55e' : '#ef4444' }} />
                 <span style={{ color: isOpen ? '#faf8f6' : '#ef4444' }}>
                   {isOpen ? 'Now accepting online orders' : 'Currently closed — check back soon!'}
@@ -569,22 +570,22 @@ const HomePage = () => {
             <h2 className="section-heading mb-3 text-white">Popular Categories</h2>
             <p className="section-sub mx-auto text-center text-ink-600">Browse our most loved sections from both outlets</p>
           </div>
-          <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-5">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-3 sm:gap-5">
             {[
-              { icon: ChefHat, label: 'Chicken',  cat: 'Starters', img: catChicken,  bg: 'rgba(255,90,0,0.02)', border: 'rgba(255,255,255,0.06)',  accent: '#ff5a00' },
-              { icon: Utensils, label: 'Biryani',  cat: 'Biryani',  img: catBiryani,  bg: 'rgba(255,90,0,0.02)', border: 'rgba(255,255,255,0.06)',   accent: '#ff5a00' },
-              { icon: Soup, label: 'Curries',  cat: 'Curries',  img: catCurries,  bg: 'rgba(255,90,0,0.02)', border: 'rgba(255,255,255,0.06)',   accent: '#ff5a00' },
-              { icon: Flame, label: 'Tandoori', cat: 'Tandoori', img: catTandoori, bg: 'rgba(255,90,0,0.02)', border: 'rgba(255,255,255,0.06)',  accent: '#ff5a00' },
-              { icon: Cookie, label: 'Sweets',   cat: 'Desserts', img: catSweets,   bg: 'rgba(255,90,0,0.02)', border: 'rgba(255,255,255,0.06)',   accent: '#ff5a00' },
-              { icon: Sparkles, label: 'Drinks',   cat: 'Drinks',   img: catDrinks,   bg: 'rgba(255,90,0,0.02)', border: 'rgba(255,255,255,0.06)',   accent: '#ff5a00' },
-            ].map(({ icon: Icon, label, cat, img, bg, border, accent }, i) => (
+              { icon: ChefHat, label: 'Chicken',  cat: 'Starters', img: catChicken },
+              { icon: Utensils, label: 'Biryani',  cat: 'Biryani',  img: catBiryani },
+              { icon: Soup, label: 'Curries',  cat: 'Curries',  img: catCurries },
+              { icon: Pizza, label: 'Pizza',  cat: 'Pizza',  img: catPizza },
+              { icon: Flame, label: 'Tandoori', cat: 'Tandoori', img: catTandoori },
+              { icon: Cookie, label: 'Sweets',   cat: 'Desserts', img: catSweets },
+              { icon: Sparkles, label: 'Drinks',   cat: 'Drinks',   img: catDrinks },
+            ].map(({ icon: Icon, label, cat, img }, i) => (
               <motion.div key={cat} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }} transition={{ delay: i * 0.05, duration: 0.4, ease: 'easeOut' }}>
                 <Link to={`/menu?cat=${cat}`}
-                  style={{ background: bg, border: `1.5px solid ${border}` }}
-                  className="group flex flex-col items-center rounded-2xl overflow-hidden hover:shadow-soft-lg transition-all duration-300 card-hover text-center bg-[#161413]">
+                  className="group flex flex-col items-center rounded-2xl overflow-hidden border border-brand-500/20 hover:border-brand-500/40 bg-[#0e0c0b] transition-all duration-300 hover:shadow-[0_0_15px_rgba(255,90,0,0.15)] text-center w-full">
                   {/* Image */}
-                  <div className="w-full aspect-square overflow-hidden relative">
+                  <div className="w-full aspect-[3/4] overflow-hidden relative">
                     <img
                       src={img}
                       alt={label}
@@ -594,21 +595,19 @@ const HomePage = () => {
                     />
                     {/* Icon badge */}
                     <span
-                      className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full shadow-md"
-                      style={{ background: 'rgba(22,20,19,0.92)', backdropFilter: 'blur(4px)', color: accent }}
+                      className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full border border-brand-500/40 bg-black/60 backdrop-blur-[2px] text-brand-500"
                     >
                       <Icon size={14} />
                     </span>
                   </div>
                   {/* Label */}
-                  <div className="w-full px-3 py-3">
+                  <div className="w-full px-3 py-5 flex flex-col items-center justify-center">
                     <span
-                      className="text-sm font-bold tracking-wide transition-colors duration-200"
-                      style={{ color: '#faf8f6' }}
+                      className="text-base font-bold tracking-wide text-white mb-1"
                     >
                       {label}
                     </span>
-                    <p className="text-ink-500 text-xs mt-0.5 font-medium group-hover:text-brand-500 transition-colors">Explore →</p>
+                    <p className="text-ink-600 text-xs font-medium group-hover:text-brand-500 transition-colors">Explore →</p>
                   </div>
                 </Link>
               </motion.div>
