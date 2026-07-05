@@ -295,26 +295,22 @@ const HomePage = () => {
                  transition={{ duration: 1.3, ease: 'easeOut' }}
                  className="relative w-full max-w-[480px] md:max-w-[550px] h-[520px] md:h-[600px] flex items-end justify-center"
                >
-                 {/* Deep orange glow behind the biryani */}
-                 <div className="absolute inset-x-0 bottom-0 h-2/3 rounded-full pointer-events-none"
-                   style={{ background: 'radial-gradient(ellipse 70% 60% at 50% 100%, rgba(255,90,0,0.28) 0%, transparent 70%)' }} />
-
-                 {/* Main Biryani Image — dynamically removes background */}
-                 <motion.div
-                   animate={{ y: [0, -10, 0] }}
-                   transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                   className="relative z-10 w-full h-full flex items-end justify-center"
-                 >
-                   <TransparentImage
-                     src={heroBiryaniNoBg}
-                     alt="Signature Dum Biryani"
-                     className="w-full h-full object-contain"
-                     style={{
-                       filter: 'drop-shadow(0 20px 50px rgba(255,90,0,0.15)) drop-shadow(0 0 60px rgba(0,0,0,0.85))',
-                     }}
-                     threshold={24}
-                   />
-                 </motion.div>
+                  {/* Main Biryani Image — dynamically removes background */}
+                  <motion.div
+                    animate={{ y: [0, -10, 0] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                    className="relative z-10 w-full h-full flex items-end justify-center"
+                  >
+                    <TransparentImage
+                      src={heroBiryaniNoBg}
+                      alt="Signature Dum Biryani"
+                      className="w-full h-full object-contain"
+                      style={{
+                        filter: 'drop-shadow(0 25px 65px rgba(0,0,0,0.92))',
+                      }}
+                      threshold={24}
+                    />
+                  </motion.div>
 
                  {/* Smoke puff container — 4 puffs (reduced from 7) for better GPU performance */}
                  <div className="smoke-container z-20">
@@ -403,7 +399,7 @@ const HomePage = () => {
                   alt="Signature Dum Biryani"
                   className="w-full h-full object-contain"
                   style={{
-                    filter: 'drop-shadow(0 16px 40px rgba(255,90,0,0.25)) drop-shadow(0 0 40px rgba(0,0,0,0.9))',
+                    filter: 'drop-shadow(0 20px 50px rgba(0,0,0,0.92))',
                   }}
                   threshold={24}
                 />
@@ -414,9 +410,6 @@ const HomePage = () => {
                 <div className="smoke-puff" />
                 <div className="smoke-puff" />
               </div>
-              {/* Glow under biryani */}
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-32 h-16 rounded-full pointer-events-none"
-                style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 100%, rgba(255,90,0,0.35) 0%, transparent 80%)' }} />
             </div>
 
             {/* Description — below heading, constrained to left of image */}
@@ -474,8 +467,8 @@ const HomePage = () => {
           {/* ── Featured item card (Hyd Dum Biryani) ──────────────── */}
           <div className="mt-3 mb-5 mx-4 rounded-2xl flex items-center gap-3 px-3 py-3"
             style={{ background: 'rgba(22,20,19,0.85)', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center">
-              <TransparentImage src={heroBiryaniNoBg} alt="Hyd Dum Biryani" className="w-full h-full object-contain" threshold={24} />
+            <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0">
+              <img src={heroBiryani} alt="Hyd Dum Biryani" className="w-full h-full object-cover" loading="lazy" />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 mb-0.5">
