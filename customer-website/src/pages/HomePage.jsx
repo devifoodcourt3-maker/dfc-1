@@ -415,7 +415,7 @@ const HomePage = () => {
                 <div className="smoke-puff" />
               </div>
               {/* Glow under biryani */}
-              <div className="absolute bottom-[25%] left-1/2 -translate-x-1/2 w-32 h-16 rounded-full pointer-events-none"
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-32 h-16 rounded-full pointer-events-none"
                 style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 100%, rgba(255,90,0,0.35) 0%, transparent 80%)' }} />
             </div>
 
@@ -474,8 +474,8 @@ const HomePage = () => {
           {/* ── Featured item card (Hyd Dum Biryani) ──────────────── */}
           <div className="mt-3 mb-5 mx-4 rounded-2xl flex items-center gap-3 px-3 py-3"
             style={{ background: 'rgba(22,20,19,0.85)', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0">
-              <img src={heroBiryani} alt="Hyd Dum Biryani" className="w-full h-full object-cover" loading="lazy" />
+            <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center">
+              <TransparentImage src={heroBiryaniNoBg} alt="Hyd Dum Biryani" className="w-full h-full object-contain" threshold={24} />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 mb-0.5">
