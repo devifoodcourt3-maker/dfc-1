@@ -415,7 +415,7 @@ const HomePage = () => {
                 <div className="smoke-puff" />
               </div>
               {/* Glow under biryani */}
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-32 h-16 rounded-full pointer-events-none"
+              <div className="absolute bottom-[25%] left-1/2 -translate-x-1/2 w-32 h-16 rounded-full pointer-events-none"
                 style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 100%, rgba(255,90,0,0.35) 0%, transparent 80%)' }} />
             </div>
 
