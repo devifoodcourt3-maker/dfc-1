@@ -28,6 +28,7 @@ const whySafety = cloudinaryAssets['why-food-safety.png'];
 const heroBiryani = cloudinaryAssets['hero-biryani.jpg'];
 const heroRockyBg = cloudinaryAssets['hero-rocky-bg.png'];
 const featuredDishesBg = cloudinaryAssets['featured-dishes-bg.png'];
+const menuDoodleBg = cloudinaryAssets['menu-doodle-bg.png'];
 
 // ── Canvas-based Black Background Remover (deferred to idle time) ────────────────
 const TransparentImage = ({ src, alt, className, style, threshold = 22 }) => {
@@ -511,14 +512,14 @@ const HomePage = () => {
       {featured.length > 0 && (
         <div className="relative w-full overflow-hidden border-t border-b"
           style={{
-            backgroundImage: `url(${featuredDishesBg})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
+            backgroundImage: `url(${menuDoodleBg})`,
+            backgroundRepeat: 'repeat',
+            backgroundSize: '750px',
+            backgroundColor: '#0c0a09',
             borderColor: 'rgba(255, 255, 255, 0.05)'
           }}>
           {/* Subtle dark overlay for readability */}
-          <div className="absolute inset-0 bg-black/45 pointer-events-none" />
+          <div className="absolute inset-0 bg-black/42 pointer-events-none" />
 
           <Section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-12 lg:py-20">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
