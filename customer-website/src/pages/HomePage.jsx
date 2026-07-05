@@ -927,25 +927,6 @@ const HomePage = () => {
         </div>
       </Section>
 
-      {/* ── CTA BANNER — responsive padding and title on mobile ──────────────── */}
-      <Section className="max-w-7xl mx-auto px-4 sm:px-6 pb-24">
-        <motion.div whileInView={{ scale: [0.97, 1] }} viewport={{ once: true }} transition={{ duration: 0.6 }}
-          className="relative overflow-hidden rounded-3xl px-6 py-12 sm:p-14 text-center animated-gradient"
-          style={{ boxShadow: '0 20px 60px rgba(255,90,0,0.25)' }}>
-          <div className="relative">
-             <img src={dfcLogo} alt="DFC" className="w-16 h-16 object-contain mx-auto mb-5 drop-shadow-lg animate-logo-breathe" />
-             <h2 className="font-display text-3xl sm:text-6xl text-white tracking-wide mb-4">READY TO ORDER? 🍽️</h2>
-            <p className="font-serif italic text-white/90 text-lg md:text-xl mb-10 max-w-xl mx-auto leading-relaxed">
-              Delicious food from DFC is just a few taps away. Order now — delivered in under 45 minutes.
-            </p>
-            <Link to="/menu"
-              className="inline-flex items-center gap-3 bg-white text-black hover:bg-orange-50 font-bold text-lg px-12 py-4 rounded-full transition-all duration-200 shadow-2xl active:scale-95"
-              style={{ color: '#0c0a09' }}>
-              Order Now <ArrowRight size={22} />
-            </Link>
-          </div>
-        </motion.div>
-      </Section>
     </div>
   );
 };
