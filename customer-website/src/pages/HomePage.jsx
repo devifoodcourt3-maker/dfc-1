@@ -295,22 +295,23 @@ const HomePage = () => {
                  transition={{ duration: 1.3, ease: 'easeOut' }}
                  className="relative w-full max-w-[480px] md:max-w-[550px] h-[520px] md:h-[600px] flex items-end justify-center"
                >
-                  {/* Main Biryani Image — dynamically removes background */}
-                  <motion.div
-                    animate={{ y: [0, -10, 0] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                    className="relative z-10 w-full h-full flex items-end justify-center"
-                  >
-                    <TransparentImage
-                      src={heroBiryaniNoBg}
-                      alt="Signature Dum Biryani"
-                      className="w-full h-full object-contain"
-                      style={{
-                        filter: 'drop-shadow(0 25px 65px rgba(0,0,0,0.92))',
-                      }}
-                      threshold={5}
-                    />
-                  </motion.div>
+                 
+                 {/* Main Biryani Image — dynamically removes background */}
+                 <motion.div
+                   animate={{ y: [0, -10, 0] }}
+                   transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                   className="relative z-10 w-full h-full flex items-end justify-center"
+                 >
+                   <TransparentImage
+                     src={heroBiryaniNoBg}
+                     alt="Signature Dum Biryani"
+                     className="w-full h-full object-contain"
+                     style={{
+                       filter: 'drop-shadow(0 20px 50px rgba(0,0,0,0.35)) drop-shadow(0 0 60px rgba(0,0,0,0.85))',
+                     }}
+                     threshold={24}
+                   />
+                 </motion.div>
 
                  {/* Smoke puff container — 4 puffs (reduced from 7) for better GPU performance */}
                  <div className="smoke-container z-20">
@@ -399,9 +400,9 @@ const HomePage = () => {
                   alt="Signature Dum Biryani"
                   className="w-full h-full object-contain"
                   style={{
-                    filter: 'drop-shadow(0 20px 50px rgba(0,0,0,0.92))',
+                    filter: 'drop-shadow(0 16px 40px rgba(0,0,0,0.35)) drop-shadow(0 0 40px rgba(0,0,0,0.9))',
                   }}
-                  threshold={5}
+                  threshold={24}
                 />
               </motion.div>
               {/* Smoke puffs */}
