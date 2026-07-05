@@ -171,14 +171,22 @@
   .smoke-puff                         { animation: none; opacity: 0; }
 }
 
-/* Touch scroll momentum & smooth scrolling for all scroll containers */
-.overflow-x-auto,
-.overflow-y-auto,
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  touch-action: pan-x;
+}
+
+.overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  touch-action: pan-y;
+}
+
 .overflow-auto {
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
-  /* Allow native scroll on touch — critical for smooth mobile scrolling */
-  touch-action: pan-y;
+  touch-action: auto;
 }
 
 /* Specific utility overrides for mapping light tailwind styles to dark premium layout */
