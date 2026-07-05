@@ -69,13 +69,27 @@ const TransparentImage = ({ src, alt, className, style, threshold = 22 }) => {
           setProcessedSrc(canvas.toDataURL());
         } catch (err) {
           // Silently keep the original src on CORS errors
+          setProcessedSrc(src);
         }
+      };
+      img.onerror = () => {
+        setProcessedSrc(src);
       };
     });
   }, [src, threshold]);
 
-  // Show original image immediately; swap to processed version when ready
-  return <img src={processedSrc ?? src} alt={alt} className={className} style={style} />;
+  return (
+    <img
+      src={processedSrc ?? src}
+      alt={alt}
+      className={className}
+      style={{
+        ...style,
+        opacity: processedSrc ? 1 : 0,
+        transition: 'opacity 0.25s ease-in-out',
+      }}
+    />
+  );
 };
 
 // ── Animated section wrapper ───────────────────────────────────────────────
