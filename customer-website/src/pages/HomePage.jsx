@@ -10,7 +10,7 @@ import { getMenu, getOffers } from '../services/api';
 import useSettingsStore from '../store/settingsStore';
 import MenuCard from '../components/menu/MenuCard';
 import cloudinaryAssets from '../cloudinary-assets.json';
-import heroBiryaniNoBg from '../assets/hero-biryani-nobg.png';
+import heroBiryaniNoBg from '../assets/hero-biryani-nobg.jpg';
 
 const dfcLogo = cloudinaryAssets['dfc-logo.png'];
 const storefrontPink = cloudinaryAssets['storefront-pink.jpg'];
