@@ -28,8 +28,8 @@ const useSocket = () => {
     const ctx = getAudioContext();
 
     const scheduleBuzzes = () => {
-      const playChimeAlert = (startTime, duration) => {
-        // Detune two oscillators at 880 Hz and 883 Hz for a clear electronic alarm bell
+      const playLowBuzz = (startTime, duration) => {
+        // Detune two oscillators at 100 Hz and 102 Hz for a deep vibrating alarm
         const osc1 = ctx.createOscillator();
         const osc2 = ctx.createOscillator();
         const gainNode = ctx.createGain();
@@ -38,15 +38,16 @@ const useSocket = () => {
         osc2.connect(gainNode);
         gainNode.connect(ctx.destination);
 
-        osc1.type = 'triangle';
-        osc1.frequency.setValueAtTime(880, startTime);
+        osc1.type = 'sawtooth';
+        osc1.frequency.setValueAtTime(100, startTime);
 
-        osc2.type = 'triangle';
-        osc2.frequency.setValueAtTime(883, startTime);
+        osc2.type = 'sawtooth';
+        osc2.frequency.setValueAtTime(102, startTime);
 
-        // Volume envelope: quick rise, exponential decay
-        gainNode.gain.setValueAtTime(0.01, startTime);
-        gainNode.gain.linearRampToValueAtTime(0.25, startTime + 0.04);
+        // Volume envelope: smooth rise, hold, rapid fade
+        gainNode.gain.setValueAtTime(0.001, startTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.25, startTime + 0.05);
+        gainNode.gain.setValueAtTime(0.25, startTime + duration - 0.05);
         gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
 
         osc1.start(startTime);
@@ -55,10 +56,10 @@ const useSocket = () => {
         osc2.stop(startTime + duration);
       };
 
-      // Play 3 clear alarm ringtones: "ding... ding... ding..."
-      playChimeAlert(ctx.currentTime, 0.28);
-      playChimeAlert(ctx.currentTime + 0.35, 0.28);
-      playChimeAlert(ctx.currentTime + 0.70, 0.28);
+      // Play 3 alarm buzzes: "bzz... bzz... bzz..."
+      playLowBuzz(ctx.currentTime, 0.25);
+      playLowBuzz(ctx.currentTime + 0.35, 0.25);
+      playLowBuzz(ctx.currentTime + 0.70, 0.25);
     };
 
     // CRITICAL: resume() is async — schedule audio only AFTER context is running.

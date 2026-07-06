@@ -28,25 +28,32 @@ export const unlockAudio = () => {
 };
 
 /**
- * Plays a pleasant A5 chime/ding to confirm sound is enabled.
+ * Plays a short, deep alarm buzz to confirm sound is enabled.
  */
 export const playUnlockChirp = () => {
   const ctx = getAudioContext();
   if (ctx.state !== 'running') return;
   
-  const osc = ctx.createOscillator();
+  const osc1 = ctx.createOscillator();
+  const osc2 = ctx.createOscillator();
   const gain = ctx.createGain();
   
-  osc.connect(gain);
+  osc1.connect(gain);
+  osc2.connect(gain);
   gain.connect(ctx.destination);
   
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(880, ctx.currentTime); // A5 note
+  osc1.type = 'sawtooth';
+  osc1.frequency.setValueAtTime(100, ctx.currentTime);
   
-  gain.gain.setValueAtTime(0.01, ctx.currentTime);
-  gain.gain.linearRampToValueAtTime(0.15, ctx.currentTime + 0.05);
-  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+  osc2.type = 'sawtooth';
+  osc2.frequency.setValueAtTime(102, ctx.currentTime);
   
-  osc.start(ctx.currentTime);
-  osc.stop(ctx.currentTime + 0.3);
+  gain.gain.setValueAtTime(0.001, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + 0.05);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+  
+  osc1.start(ctx.currentTime);
+  osc1.stop(ctx.currentTime + 0.25);
+  osc2.start(ctx.currentTime);
+  osc2.stop(ctx.currentTime + 0.25);
 };
