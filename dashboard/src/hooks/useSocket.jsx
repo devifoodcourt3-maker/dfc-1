@@ -71,14 +71,14 @@ const useSocket = () => {
         osc2.stop(startTime + duration);
       };
 
-      // 4 rapid high-pitched alarm bursts: BEEP-BEEP-BEEP-BEEP
+      // 4 deep low-pitch alarm bursts: BZZZ-BZZZ-BZZZ-BZZZ
       const now = ctx.currentTime;
-      const burstDuration = 0.18;
-      const gap = 0.24; // burst + silence gap
-      playBurst(now + gap * 0, 1040, burstDuration);
-      playBurst(now + gap * 1, 1040, burstDuration);
-      playBurst(now + gap * 2, 1040, burstDuration);
-      playBurst(now + gap * 3, 1040, burstDuration);
+      const burstDuration = 0.28;
+      const gap = 0.38; // burst + silence gap
+      playBurst(now + gap * 0, 120, burstDuration);
+      playBurst(now + gap * 1, 120, burstDuration);
+      playBurst(now + gap * 2, 120, burstDuration);
+      playBurst(now + gap * 3, 120, burstDuration);
     };
 
     // CRITICAL: resume() is async — schedule audio only AFTER context is running.
