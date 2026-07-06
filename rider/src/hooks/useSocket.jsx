@@ -16,17 +16,36 @@ const useSocket = () => {
   const playAssignSound = useCallback(() => {
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(700, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(1000, ctx.currentTime + 0.2);
-      gain.gain.setValueAtTime(0.7, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.6);
+
+      const playChime = (startTime, duration) => {
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc1.type = 'triangle';
+        osc1.frequency.setValueAtTime(880, startTime);
+
+        osc2.type = 'triangle';
+        osc2.frequency.setValueAtTime(883, startTime);
+
+        gain.gain.setValueAtTime(0.01, startTime);
+        gain.gain.linearRampToValueAtTime(0.25, startTime + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+
+        osc1.start(startTime);
+        osc1.stop(startTime + duration);
+        osc2.start(startTime);
+        osc2.stop(startTime + duration);
+      };
+
+      // Play 3 clear ding-ding-ding chimes
+      playChime(ctx.currentTime, 0.28);
+      playChime(ctx.currentTime + 0.35, 0.28);
+      playChime(ctx.currentTime + 0.70, 0.28);
     } catch {
       // Audio unavailable (e.g. before first user interaction) — ignore
     }
