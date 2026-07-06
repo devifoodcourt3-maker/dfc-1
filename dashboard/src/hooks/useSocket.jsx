@@ -28,37 +28,57 @@ const useSocket = () => {
     const ctx = getAudioContext();
 
     const scheduleBuzzes = () => {
-      const playChimeAlert = (startTime, duration) => {
-        // Detune two oscillators at 880 Hz and 883 Hz for a clear electronic alarm bell
+      // Master compressor to maximise perceived loudness
+      const compressor = ctx.createDynamicsCompressor();
+      compressor.threshold.value = -6;
+      compressor.knee.value = 0;
+      compressor.ratio.value = 20;
+      compressor.attack.value = 0.001;
+      compressor.release.value = 0.1;
+      compressor.connect(ctx.destination);
+
+      const masterGain = ctx.createGain();
+      masterGain.gain.value = 1.5;
+      masterGain.connect(compressor);
+
+      const playBurst = (startTime, freq, duration) => {
+        // Layer 1: sawtooth for harsh buzz
         const osc1 = ctx.createOscillator();
-        const osc2 = ctx.createOscillator();
-        const gainNode = ctx.createGain();
-
-        osc1.connect(gainNode);
-        osc2.connect(gainNode);
-        gainNode.connect(ctx.destination);
-
-        osc1.type = 'triangle';
-        osc1.frequency.setValueAtTime(880, startTime);
-
-        osc2.type = 'triangle';
-        osc2.frequency.setValueAtTime(883, startTime);
-
-        // Volume envelope: quick rise, exponential decay
-        gainNode.gain.setValueAtTime(0.01, startTime);
-        gainNode.gain.linearRampToValueAtTime(0.25, startTime + 0.04);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
-
+        const g1 = ctx.createGain();
+        osc1.type = 'sawtooth';
+        osc1.frequency.setValueAtTime(freq, startTime);
+        osc1.connect(g1);
+        g1.connect(masterGain);
+        g1.gain.setValueAtTime(0, startTime);
+        g1.gain.linearRampToValueAtTime(0.6, startTime + 0.01);
+        g1.gain.setValueAtTime(0.6, startTime + duration - 0.01);
+        g1.gain.linearRampToValueAtTime(0, startTime + duration);
         osc1.start(startTime);
         osc1.stop(startTime + duration);
+
+        // Layer 2: square at sub-octave for body/depth
+        const osc2 = ctx.createOscillator();
+        const g2 = ctx.createGain();
+        osc2.type = 'square';
+        osc2.frequency.setValueAtTime(freq / 2, startTime);
+        osc2.connect(g2);
+        g2.connect(masterGain);
+        g2.gain.setValueAtTime(0, startTime);
+        g2.gain.linearRampToValueAtTime(0.4, startTime + 0.01);
+        g2.gain.setValueAtTime(0.4, startTime + duration - 0.01);
+        g2.gain.linearRampToValueAtTime(0, startTime + duration);
         osc2.start(startTime);
         osc2.stop(startTime + duration);
       };
 
-      // Play 3 clear alarm ringtones: "ding... ding... ding..."
-      playChimeAlert(ctx.currentTime, 0.28);
-      playChimeAlert(ctx.currentTime + 0.35, 0.28);
-      playChimeAlert(ctx.currentTime + 0.70, 0.28);
+      // 4 rapid high-pitched alarm bursts: BEEP-BEEP-BEEP-BEEP
+      const now = ctx.currentTime;
+      const burstDuration = 0.18;
+      const gap = 0.24; // burst + silence gap
+      playBurst(now + gap * 0, 1040, burstDuration);
+      playBurst(now + gap * 1, 1040, burstDuration);
+      playBurst(now + gap * 2, 1040, burstDuration);
+      playBurst(now + gap * 3, 1040, burstDuration);
     };
 
     // CRITICAL: resume() is async — schedule audio only AFTER context is running.
