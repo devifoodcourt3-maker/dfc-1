@@ -55,10 +55,34 @@ const TransparentImage = ({ src, alt, className, style, threshold = 22 }) => {
 };
 
 const TYPE_CONFIG = {
-  combo: { icon: Gift, label: 'Combo Deal', grad: 'linear-gradient(135deg, #ea580c, #f97316)' },
-  coupon: { icon: Tag, label: 'Coupon', grad: 'linear-gradient(135deg, #ff5a00, #fb842f)' },
-  promo: { icon: Zap, label: 'Promotion', grad: 'linear-gradient(135deg, #d97706, #fb842f)' },
-  seasonal: { icon: Gift, label: 'Special', grad: 'linear-gradient(135deg, #9a3412, #c2410c)' },
+  combo: { 
+    icon: Gift, 
+    label: 'Combo Deal', 
+    glow: 'rgba(234, 88, 12, 0.25)',
+    accent: '#ea580c',
+    badgeBg: 'rgba(234, 88, 12, 0.2)'
+  },
+  coupon: { 
+    icon: Tag, 
+    label: 'Coupon', 
+    glow: 'rgba(255, 90, 0, 0.3)',
+    accent: '#ff5a00',
+    badgeBg: 'rgba(255, 90, 0, 0.2)'
+  },
+  promo: { 
+    icon: Zap, 
+    label: 'Promotion', 
+    glow: 'rgba(217, 119, 6, 0.25)',
+    accent: '#d97706',
+    badgeBg: 'rgba(217, 119, 6, 0.2)'
+  },
+  seasonal: { 
+    icon: Gift, 
+    label: 'Special', 
+    glow: 'rgba(154, 52, 18, 0.25)',
+    accent: '#9a3412',
+    badgeBg: 'rgba(154, 52, 18, 0.2)'
+  },
 };
 
 const OfferCard = ({ offer }) => {
@@ -81,44 +105,80 @@ const OfferCard = ({ offer }) => {
       : 'FREE DELIVERY';
 
   return (
-    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-      className="relative overflow-hidden rounded-2xl p-6 text-white"
-      style={{ background: config.grad, boxShadow: '0 10px 30px rgba(0,0,0,0.12)' }}
+    <motion.div 
+      initial={{ opacity: 0, y: 16 }} 
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -6, transition: { duration: 0.2 } }}
+      className="relative overflow-hidden rounded-2xl text-white flex flex-col justify-between"
+      style={{ 
+        background: 'linear-gradient(180deg, rgba(28, 25, 23, 0.75) 0%, rgba(20, 18, 17, 0.85) 100%)',
+        backdropFilter: 'blur(16px)',
+        border: '1px solid rgba(255, 255, 255, 0.08)',
+        boxShadow: `0 4px 20px rgba(0,0,0,0.3), 0 0 15px ${config.glow}`,
+      }}
     >
-      <div className="absolute -top-6 -right-6 w-28 h-28 bg-white/10 rounded-full" />
-      <div className="absolute -bottom-4 -left-4 w-20 h-20 bg-black/5 rounded-full" />
+      {/* Glow highlight */}
+      <div className="absolute top-0 left-0 right-0 h-1" style={{ background: `linear-gradient(90deg, transparent, ${config.accent}, transparent)` }} />
 
-      <div className="relative space-y-4">
-        <div className="flex items-start justify-between">
+      {/* Decorative Circles/Glows */}
+      <div className="absolute -top-12 -right-12 w-24 h-24 rounded-full opacity-20 blur-xl pointer-events-none" style={{ backgroundColor: config.accent }} />
+      <div className="absolute -bottom-12 -left-12 w-24 h-24 rounded-full opacity-10 blur-xl pointer-events-none" style={{ backgroundColor: config.accent }} />
+
+      {/* Main Details (Top Section) */}
+      <div className="p-6 pb-4 space-y-4 flex-1">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-              <Icon size={16} className="text-white" />
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center animate-pulse-glow" style={{ backgroundColor: config.badgeBg }}>
+              <Icon size={16} style={{ color: config.accent }} />
             </div>
-            <span className="text-xs font-bold text-white/75 uppercase tracking-widest">{config.label}</span>
+            <span className="text-xs font-bold uppercase tracking-widest" style={{ color: config.accent }}>{config.label}</span>
           </div>
-          <span className="text-2xl font-black text-white">{discountLabel}</span>
+          <span className="text-2xl font-black" style={{ color: config.accent }}>{discountLabel}</span>
         </div>
 
         <div>
           <h3 className="font-bold text-white text-xl leading-tight mb-1">{offer.title}</h3>
-          {offer.description && <p className="text-white/75 text-sm">{offer.description}</p>}
+          {offer.description && <p className="text-ink-600 text-sm leading-relaxed">{offer.description}</p>}
         </div>
 
         {offer.minOrderValue > 0 && (
-          <p className="text-white/65 text-xs">Min. order: ₹{offer.minOrderValue}</p>
+          <div className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded bg-white/5 text-ink-700 font-medium">
+            Min. order: ₹{offer.minOrderValue}
+          </div>
         )}
+      </div>
 
+      {/* Ticket Tear Perforated Line with side notches */}
+      <div className="relative my-2">
+        {/* Left Semi-circle notch */}
+        <div className="absolute left-[-9px] top-1/2 -translate-y-1/2 w-4.5 h-4.5 rounded-full bg-[#0c0a09] border border-stone-850 z-20" style={{ boxShadow: 'inset -3px 0 5px rgba(0,0,0,0.6)' }} />
+        
+        {/* Right Semi-circle notch */}
+        <div className="absolute right-[-9px] top-1/2 -translate-y-1/2 w-4.5 h-4.5 rounded-full bg-[#0c0a09] border border-stone-850 z-20" style={{ boxShadow: 'inset 3px 0 5px rgba(0,0,0,0.6)' }} />
+        
+        {/* Perforated divider line */}
+        <div className="mx-3 border-t border-dashed border-stone-800" />
+      </div>
+
+      {/* Code & Expiry (Bottom Section) */}
+      <div className="p-6 pt-4 space-y-3 bg-cream-200/20">
         {offer.code && (
           <button onClick={copyCode}
-            className="w-full flex items-center justify-between bg-white/15 hover:bg-white/25 border border-white/25 rounded-xl px-4 py-3 transition-all group">
-            <span className="font-mono font-bold text-white tracking-widest text-sm">{offer.code}</span>
-            <span className="flex items-center gap-1.5 text-white/80 group-hover:text-white text-xs font-medium">
-              {copied ? <><Check size={13} /> Copied!</> : <><Copy size={13} /> Copy</>}
+            className="w-full flex items-center justify-between bg-cream-100 border border-white/5 hover:border-white/10 rounded-xl px-4 py-2.5 transition-all group active:scale-98">
+            <span className="font-mono font-bold tracking-widest text-sm text-stone-200 group-hover:text-white">{offer.code}</span>
+            <span className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-md transition-all active:scale-95"
+                  style={{ color: copied ? '#22c55e' : config.accent, backgroundColor: copied ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.03)' }}>
+              {copied ? <><Check size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
             </span>
           </button>
         )}
 
-        {validUntil && <p className="text-white/55 text-xs">Valid until {validUntil}</p>}
+        {validUntil && (
+          <div className="flex items-center justify-between text-[11px] text-ink-500">
+            <span>Valid till</span>
+            <span className="font-semibold text-ink-700">{validUntil}</span>
+          </div>
+        )}
       </div>
     </motion.div>
   );
@@ -145,39 +205,80 @@ const OffersPage = () => {
         backgroundColor: '#0c0a09'
       }}>
 
-      {/* Dark overlay to blend background doodles seamlessly (lighter to make doodles more visible) */}
-      <div className="absolute inset-0 bg-black/42 pointer-events-none" />
+      {/* Dark overlay to blend background doodles seamlessly */}
+      <div className="absolute inset-0 bg-black/55 pointer-events-none" />
 
-      {/* Ambient orange glow blobs behind header and content */}
+      {/* Grid Pattern Overlay */}
+      <div className="absolute inset-0 pointer-events-none opacity-20"
+        style={{
+          backgroundImage: 'radial-gradient(rgba(255, 90, 0, 0.15) 1px, transparent 1px)',
+          backgroundSize: '24px 24px',
+        }} />
+
+      {/* Ambient glow blobs behind header and content */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {/* Top-left corner warm orange focus spot */}
-        <div className="absolute w-[900px] h-[900px] top-[-300px] left-[-350px] rounded-full"
+        <div className="absolute w-[900px] h-[900px] top-[-300px] left-[-350px] rounded-full animate-float-slow"
           style={{
-            background: 'radial-gradient(circle at 50% 50%, rgba(255,90,0,0.36) 0%, rgba(255,90,0,0.08) 50%, transparent 70%)',
+            background: 'radial-gradient(circle at 50% 50%, rgba(255,90,0,0.3) 0%, rgba(255,90,0,0.06) 50%, transparent 70%)',
             mixBlendMode: 'screen'
           }} />
 
         {/* Top-right corner warm orange focus spot */}
-        <div className="absolute w-[900px] h-[900px] top-[-300px] right-[-350px] rounded-full"
+        <div className="absolute w-[900px] h-[900px] top-[-300px] right-[-350px] rounded-full animate-float"
           style={{
-            background: 'radial-gradient(circle at 50% 50%, rgba(255,90,0,0.36) 0%, rgba(255,90,0,0.08) 50%, transparent 70%)',
+            background: 'radial-gradient(circle at 50% 50%, rgba(255,90,0,0.3) 0%, rgba(255,90,0,0.06) 50%, transparent 70%)',
+            mixBlendMode: 'screen'
+          }} />
+
+        {/* Bottom center deep orange focus spot */}
+        <div className="absolute w-[800px] h-[800px] bottom-[-200px] left-1/2 -translate-x-1/2 rounded-full"
+          style={{
+            background: 'radial-gradient(circle at 50% 50%, rgba(234,88,12,0.15) 0%, rgba(234,88,12,0.03) 50%, transparent 70%)',
             mixBlendMode: 'screen'
           }} />
       </div>
 
-      {/* Scattered background veggies/ingredients with transparent background */}
+      {/* Floating veggies/ingredients backgrounds with parallax movement */}
+      <div className="absolute inset-x-0 top-0 bottom-0 pointer-events-none overflow-hidden z-10">
+        <motion.div
+          animate={{ y: [0, -15, 0], rotate: [0, 4, 0] }}
+          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute left-[-100px] top-[15%] w-[320px] opacity-15 hidden lg:block"
+        >
+          <TransparentImage src={floatingVeggies} alt="floating ingredient 1" className="w-full transform -rotate-12" threshold={20} />
+        </motion.div>
+        <motion.div
+          animate={{ y: [0, 15, 0], rotate: [0, -4, 0] }}
+          transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+          className="absolute right-[-100px] top-[45%] w-[320px] opacity-15 hidden lg:block"
+        >
+          <TransparentImage src={floatingVeggies} alt="floating ingredient 2" className="w-full transform rotate-45 scale-x-[-1]" threshold={20} />
+        </motion.div>
+      </div>
 
-      <div className="max-w-7xl mx-auto pt-12">
+      <div className="max-w-7xl mx-auto pt-12 relative z-20">
         {/* Hero */}
         <div className="text-center mb-12">
-          <span className="inline-flex items-center gap-2 text-sm font-semibold px-4 py-1.5 rounded-full mb-5"
+          <span className="inline-flex items-center gap-2 text-xs font-bold tracking-wider px-4 py-1.5 rounded-full mb-5"
             style={{ background: 'rgba(255,90,0,0.08)', border: '1px solid rgba(255,90,0,0.25)', color: '#ff5a00' }}>
-            <Zap size={14} /> Exclusive Deals
+            <Zap size={14} className="animate-pulse" /> EXCLUSIVE DEALS
           </span>
-          <h1 className="section-heading text-4xl md:text-5xl mb-4 text-white">Today's <span className="gradient-text">Offers</span></h1>
-          <p className="section-sub mx-auto text-center">
+          <h1 className="font-display text-5xl sm:text-6xl leading-none tracking-wide text-white mb-3">
+            TODAY'S <span className="gradient-text-warm">OFFERS</span>
+          </h1>
+          <p className="text-ink-600 max-w-md mx-auto text-sm sm:text-base font-serif italic">
             Use these codes at checkout to save big on your next order
           </p>
+          {/* Decorative Divider Line */}
+          <div className="flex items-center justify-center my-4 text-[#ff5a00] opacity-80">
+            <svg width="220" height="16" viewBox="0 0 220 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 8H95M125 8H210" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <path d="M5 8C15 4 15 12 25 8" stroke="currentColor" strokeWidth="1.5" fill="none" />
+              <path d="M215 8C205 4 205 12 195 8" stroke="currentColor" strokeWidth="1.5" fill="none" />
+              <path d="M110 11.5L106.5 8C103.5 5 101.5 7 103.5 10L110 14L116.5 10C118.5 7 116.5 5 113.5 8L110 11.5Z" fill="currentColor" />
+            </svg>
+          </div>
         </div>
 
         {/* Filter */}
@@ -196,7 +297,7 @@ const OffersPage = () => {
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="rounded-2xl bg-white border border-ink-900/[0.06] h-52 skeleton" />
+              <div key={i} className="rounded-2xl bg-cream-100/40 border border-white/5 h-56 animate-pulse" />
             ))}
           </div>
         ) : filtered.length > 0 ? (
@@ -204,18 +305,24 @@ const OffersPage = () => {
             {filtered.map((offer) => <OfferCard key={offer._id} offer={offer} />)}
           </div>
         ) : (
-          <div className="text-center py-24">
+          <div className="text-center py-24 bg-cream-100/20 rounded-2xl border border-white/5 backdrop-blur-md">
             <p className="text-5xl mb-4">🎁</p>
-            <p className="text-ink-700 font-semibold">No offers available right now</p>
-            <p className="text-ink-500 text-sm mt-2">Check back soon for exclusive deals</p>
+            <p className="text-ink-900 font-semibold text-lg">No offers available right now</p>
+            <p className="text-ink-600 text-sm mt-2">Check back soon for exclusive deals</p>
           </div>
         )}
 
         {/* Info banner */}
-        <div className="mt-12 card-premium p-6 text-center">
-          <p className="text-ink-600 text-sm">
-            💡 <span className="text-ink-900 font-semibold">How to use a coupon?</span> Add items to your cart,
-            go to checkout, and enter the coupon code in the "Coupon Code" field before placing your order.
+        <div className="mt-12 p-6 text-center rounded-2xl border"
+          style={{ 
+            background: 'linear-gradient(90deg, rgba(255, 90, 0, 0.04) 0%, rgba(255, 90, 0, 0.08) 50%, rgba(255, 90, 0, 0.04) 100%)',
+            borderColor: 'rgba(255, 90, 0, 0.15)',
+            boxShadow: '0 4px 30px rgba(0,0,0,0.15)',
+            backdropFilter: 'blur(8px)'
+          }}>
+          <p className="text-stone-400 text-sm leading-relaxed">
+            💡 <span className="text-white font-semibold">How to use a coupon?</span> Add items to your cart,
+            go to checkout, and enter the coupon code in the <span className="text-[#ff5a00] font-semibold">"Coupon Code"</span> field before placing your order.
           </p>
         </div>
       </div>
