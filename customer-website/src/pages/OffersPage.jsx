@@ -239,23 +239,7 @@ const OffersPage = () => {
           }} />
       </div>
 
-      {/* Floating veggies/ingredients backgrounds with parallax movement */}
-      <div className="absolute inset-x-0 top-0 bottom-0 pointer-events-none overflow-hidden z-10">
-        <motion.div
-          animate={{ y: [0, -15, 0], rotate: [0, 4, 0] }}
-          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute left-[-100px] top-[15%] w-[320px] opacity-15 hidden lg:block"
-        >
-          <TransparentImage src={floatingVeggies} alt="floating ingredient 1" className="w-full transform -rotate-12" threshold={20} />
-        </motion.div>
-        <motion.div
-          animate={{ y: [0, 15, 0], rotate: [0, -4, 0] }}
-          transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-          className="absolute right-[-100px] top-[45%] w-[320px] opacity-15 hidden lg:block"
-        >
-          <TransparentImage src={floatingVeggies} alt="floating ingredient 2" className="w-full transform rotate-45 scale-x-[-1]" threshold={20} />
-        </motion.div>
-      </div>
+
 
       <div className="max-w-7xl mx-auto pt-12 relative z-20">
         {/* Hero */}
