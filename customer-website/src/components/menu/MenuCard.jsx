@@ -88,7 +88,7 @@ const MenuCard = ({ item, cartRef }) => {
 
       {/* Body */}
       <div className="p-3 sm:p-4 flex flex-col flex-1">
-        <h3 className="font-bold text-ink-900 text-xs sm:text-sm leading-snug mb-1 line-clamp-1">{item.name}</h3>
+        <h3 className="font-bold text-ink-900 text-xs sm:text-sm leading-snug mb-1">{item.name}</h3>
         {item.description && (
           <p className="text-ink-500 text-[10px] sm:text-xs leading-relaxed line-clamp-2 mb-2">{item.description}</p>
         )}
