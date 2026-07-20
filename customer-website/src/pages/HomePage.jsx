@@ -5,10 +5,12 @@ import {
   ArrowRight, Star, Clock, Bike, ShieldCheck,
   Phone, MapPin, ChevronRight, Flame, Sparkles, Navigation,
   Zap, Quote, Award, Utensils, ChefHat, Cookie, Pizza, Soup,
+  Gift, Tag, Copy, Check,
 } from 'lucide-react';
 import { getMenu, getOffers } from '../services/api';
 import useSettingsStore from '../store/settingsStore';
 import MenuCard from '../components/menu/MenuCard';
+import toast from 'react-hot-toast';
 import cloudinaryAssets from '../cloudinary-assets.json';
 import heroBiryaniNoBg from '../assets/hero-biryani-nobg.jpg';
 import popularCategoriesBg from '../assets/popular-categories-bg.jpg';
@@ -170,6 +172,138 @@ const MARQUEE_ITEMS = [
   'SIGNATURE DUM BIRYANI', 'AUTHENTIC CURRIES', 'TANDOORI GRILLS', 'HERITAGE SWEETS',
   'PREMIUM BAKERY', 'FRESH MOCKTAILS', 'MOUTH-WATERING STARTERS', 'EXOTIC KEBABS',
 ];
+
+const TYPE_CONFIG = {
+  combo: { 
+    icon: Gift, 
+    label: 'Combo Deal', 
+    glow: 'rgba(234, 88, 12, 0.25)',
+    accent: '#ea580c',
+    badgeBg: 'rgba(234, 88, 12, 0.2)'
+  },
+  coupon: { 
+    icon: Tag, 
+    label: 'Coupon', 
+    glow: 'rgba(255, 90, 0, 0.3)',
+    accent: '#ff5a00',
+    badgeBg: 'rgba(255, 90, 0, 0.2)'
+  },
+  promo: { 
+    icon: Zap, 
+    label: 'Promotion', 
+    glow: 'rgba(217, 119, 6, 0.25)',
+    accent: '#d97706',
+    badgeBg: 'rgba(217, 119, 6, 0.2)'
+  },
+  seasonal: { 
+    icon: Gift, 
+    label: 'Special', 
+    glow: 'rgba(154, 52, 18, 0.25)',
+    accent: '#9a3412',
+    badgeBg: 'rgba(154, 52, 18, 0.2)'
+  },
+};
+
+const HomeOfferCard = ({ offer, index }) => {
+  const [copied, setCopied] = useState(false);
+  const config = TYPE_CONFIG[offer.type] || TYPE_CONFIG.promo;
+  const Icon = config.icon;
+
+  const copyCode = () => {
+    navigator.clipboard.writeText(offer.code);
+    setCopied(true);
+    toast.success('Coupon code copied!');
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const validUntil = offer.validUntil ? new Date(offer.validUntil).toLocaleDateString('en-IN') : null;
+  const discountLabel = offer.discountType === 'percent'
+    ? `${offer.discountValue}% OFF`
+    : offer.discountType === 'flat'
+      ? `₹${offer.discountValue} OFF`
+      : 'FREE DELIVERY';
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.93 }} 
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }} 
+      transition={{ delay: index * 0.12 }}
+      whileHover={{ y: -6, transition: { duration: 0.2 } }}
+      className="relative overflow-hidden rounded-2xl text-white flex flex-col justify-between"
+      style={{ 
+        background: 'linear-gradient(180deg, rgba(28, 25, 23, 0.75) 0%, rgba(20, 18, 17, 0.85) 100%)',
+        backdropFilter: 'blur(16px)',
+        border: '1px solid rgba(255, 255, 255, 0.08)',
+        boxShadow: `0 4px 20px rgba(0,0,0,0.3), 0 0 15px ${config.glow}`,
+      }}
+    >
+      {/* Glow highlight */}
+      <div className="absolute top-0 left-0 right-0 h-1" style={{ background: `linear-gradient(90deg, transparent, ${config.accent}, transparent)` }} />
+
+      {/* Decorative Circles/Glows */}
+      <div className="absolute -top-12 -right-12 w-24 h-24 rounded-full opacity-20 blur-xl pointer-events-none" style={{ backgroundColor: config.accent }} />
+      <div className="absolute -bottom-12 -left-12 w-24 h-24 rounded-full opacity-10 blur-xl pointer-events-none" style={{ backgroundColor: config.accent }} />
+
+      {/* Main Details (Top Section) */}
+      <div className="p-6 pb-4 space-y-4 flex-1">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center animate-pulse-glow" style={{ backgroundColor: config.badgeBg }}>
+              <Icon size={16} style={{ color: config.accent }} />
+            </div>
+            <span className="text-xs font-bold uppercase tracking-widest" style={{ color: config.accent }}>{config.label}</span>
+          </div>
+          <span className="text-2xl font-black" style={{ color: config.accent }}>{discountLabel}</span>
+        </div>
+
+        <div>
+          <h3 className="font-bold text-white text-xl leading-tight mb-1">{offer.title}</h3>
+          {offer.description && <p className="text-ink-600 text-sm leading-relaxed">{offer.description}</p>}
+        </div>
+
+        {offer.minOrderValue > 0 && (
+          <div className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded bg-white/5 text-ink-700 font-medium">
+            Min. order: ₹{offer.minOrderValue}
+          </div>
+        )}
+      </div>
+
+      {/* Ticket Tear Perforated Line with side notches */}
+      <div className="relative my-2">
+        {/* Left Semi-circle notch */}
+        <div className="absolute left-[-9px] top-1/2 -translate-y-1/2 w-4.5 h-4.5 rounded-full bg-[#0c0a09] border border-stone-850 z-20" style={{ boxShadow: 'inset -3px 0 5px rgba(0,0,0,0.6)' }} />
+        
+        {/* Right Semi-circle notch */}
+        <div className="absolute right-[-9px] top-1/2 -translate-y-1/2 w-4.5 h-4.5 rounded-full bg-[#0c0a09] border border-stone-850 z-20" style={{ boxShadow: 'inset 3px 0 5px rgba(0,0,0,0.6)' }} />
+        
+        {/* Perforated divider line */}
+        <div className="mx-3 border-t border-dashed border-stone-800" />
+      </div>
+
+      {/* Code & Expiry (Bottom Section) */}
+      <div className="p-6 pt-4 space-y-3 bg-cream-200/20">
+        {offer.code && (
+          <button onClick={copyCode}
+            className="w-full flex items-center justify-between bg-cream-100 border border-white/5 hover:border-white/10 rounded-xl px-4 py-2.5 transition-all group active:scale-98">
+            <span className="font-mono font-bold tracking-widest text-sm text-stone-200 group-hover:text-white">{offer.code}</span>
+            <span className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-md transition-all active:scale-95"
+                  style={{ color: copied ? '#22c55e' : config.accent, backgroundColor: copied ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.03)' }}>
+              {copied ? <><Check size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
+            </span>
+          </button>
+        )}
+
+        {validUntil && (
+          <div className="flex items-center justify-between text-[11px] text-ink-500">
+            <span>Valid till</span>
+            <span className="font-semibold text-ink-700">{validUntil}</span>
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 const HomePage = () => {
@@ -758,35 +892,9 @@ const HomePage = () => {
 
         {offers.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {offers.map((offer, i) => {
-              const grads = [
-                'linear-gradient(135deg, #ff5a00, #ff7a00)',
-                'linear-gradient(135deg, #ea580c, #f97316)',
-                'linear-gradient(135deg, #9a3412, #c2410c)',
-              ];
-              return (
-                <motion.div key={offer._id} initial={{ opacity: 0, scale: 0.93 }} whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }} transition={{ delay: i * 0.12 }}
-                  className="relative overflow-hidden rounded-2xl p-7 text-white"
-                  style={{ background: grads[i % 3], boxShadow: '0 12px 32px rgba(0,0,0,0.4)' }}>
-                  <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-white/10" />
-                  <div className="absolute -bottom-6 -left-6 w-24 h-24 rounded-full bg-black/5" />
-                  <div className="relative">
-                    <span className="text-xs font-bold text-white/75 uppercase tracking-widest bg-white/15 px-2.5 py-1 rounded-full border border-white/15">
-                      {offer.type}
-                    </span>
-                    <h3 className="font-bold text-white text-xl mt-4 mb-1">{offer.title}</h3>
-                    <p className="text-white/75 text-sm mb-5 leading-relaxed">{offer.description}</p>
-                    {offer.code && (
-                      <div className="inline-flex items-center gap-2 bg-black/20 border border-white/20 rounded-xl px-4 py-2.5 backdrop-blur-sm">
-                        <Sparkles size={13} className="text-white/70" />
-                        <span className="text-white font-mono font-bold tracking-[0.2em] text-sm">{offer.code}</span>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              );
-            })}
+            {offers.map((offer, i) => (
+              <HomeOfferCard key={offer._id} offer={offer} index={i} />
+            ))}
           </div>
         ) : (
           /* ── Empty state — shown when no offers are active ── */
