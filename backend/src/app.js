@@ -97,6 +97,22 @@ httpServer.listen(PORT, () => {
   console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`   Health: http://localhost:${PORT}/health`);
   console.log(`   API base: http://localhost:${PORT}/api\n`);
+
+  // Auto Keep-Alive Self-Ping (prevents Render free tier from sleeping)
+  const renderUrl = process.env.RENDER_EXTERNAL_URL || process.env.BACKEND_URL;
+  if (renderUrl) {
+    const PING_INTERVAL = 12 * 60 * 1000; // 12 minutes (Render sleeps after 15m)
+    setInterval(() => {
+      const pingUrl = `${renderUrl.replace(/\/$/, '')}/health`;
+      const protocol = pingUrl.startsWith('https') ? require('https') : require('http');
+      protocol.get(pingUrl, (res) => {
+        console.log(`[Keep-Alive Ping] ${new Date().toISOString()} -> ${res.statusCode}`);
+      }).on('error', (err) => {
+        console.error('[Keep-Alive Ping Error]', err.message);
+      });
+    }, PING_INTERVAL);
+    console.log(`📡 Keep-Alive self-ping initialized for: ${renderUrl}/health (every 12m)`);
+  }
 });
 
 // ── Graceful Shutdown ─────────────────────────────────────────────────────────
