@@ -15,7 +15,7 @@ const init = async () => {
     await mongoose.connect(process.env.MONGODB_URI);
     console.log('Connected to MongoDB');
 
-    const ownerEmail = (process.env.OWNER_EMAIL || 'admin@dfcrestaurant.com').toLowerCase();
+    const ownerEmail = (process.env.OWNER_EMAIL || 'admin@dfcthagarapuvalasa.in').toLowerCase();
 
     // Already set up? Leave everything (orders, menu, offers, riders) exactly as it is.
     let restaurant = await Restaurant.findOne({ ownerEmail });
@@ -35,7 +35,7 @@ const init = async () => {
       ownerEmail,
       password: process.env.OWNER_PASSWORD || 'Admin@1234',
       phone: '+91 98765 43210',
-      email: 'hello@dfcrestaurant.com',
+      email: 'hello@dfcthagarapuvalasa.in',
       address: 'Tagarapuvalasa, Visakhapatnam, Andhra Pradesh 531162',
       tagline: 'Authentic flavours, delivered with love',
     });

@@ -58,7 +58,7 @@ const ContactPage = () => {
   const { settings, restaurant } = useSettingsStore();
 
   const phone = restaurant?.phone || '+91 98765 43210';
-  const email = restaurant?.email || 'hello@dfcrestaurant.com';
+  const email = restaurant?.email || 'hello@dfcthagarapuvalasa.in';
   const whatsapp = settings?.socialLinks?.whatsapp || phone;
   const isOpen = settings?.isOpen ?? true;
   const instagramHref = settings?.socialLinks?.instagram || '#';

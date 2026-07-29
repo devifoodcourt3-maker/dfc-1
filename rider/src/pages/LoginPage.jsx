@@ -53,7 +53,7 @@ const LoginPage = () => {
               <label className="label">Email Address</label>
               <input
                 type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                placeholder="rider@dfcrestaurant.com" className="input" required autoFocus
+                placeholder="rider@dfcthagarapuvalasa.in" className="input" required autoFocus
                 autoCapitalize="none" autoCorrect="off" inputMode="email"
               />
             </div>
