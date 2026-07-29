@@ -115,7 +115,7 @@ const ContactPage = () => {
         title="Contact DFC Restaurant Tagarapuvalasa | Outlets & Location"
         description="Visit DFC Restaurant in Tagarapuvalasa. Find outlet locations, opening hours, contact phone numbers & get instant directions for the best food in Tagarapuvalasa & Bheemili."
         keywords="DFC restaurant address, DFC Tagarapuvalasa location, DFC Thagarapuvalasa phone number, best restaurant in tagarapuvalasa, best restaurant in bheemili"
-        canonical="https://dfcrestaurant.com/contact"
+        canonical="https://dfcthagarapuvalasa.in/contact"
       />
 
       {/* Dark overlay to blend background doodles seamlessly (lighter to make doodles more visible) */}

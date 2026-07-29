@@ -9,4 +9,4 @@ Allow: /track
 # Disallow private checkout pages from indexation
 Disallow: /checkout
 
-Sitemap: https://dfcrestaurant.com/sitemap.xml
+Sitemap: https://dfcthagarapuvalasa.in/sitemap.xml

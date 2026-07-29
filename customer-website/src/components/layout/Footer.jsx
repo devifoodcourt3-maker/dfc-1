@@ -9,7 +9,7 @@ const Footer = () => {
   const { settings, restaurant } = useSettingsStore();
 
   const phone = restaurant?.phone || '+91 98765 43210';
-  const email = restaurant?.email || 'hello@dfcrestaurant.com';
+  const email = restaurant?.email || 'hello@dfcthagarapuvalasa.in';
   const address = restaurant?.address || 'Tagarapuvalasa, Visakhapatnam, Andhra Pradesh 531162';
   const isOpen = settings?.isOpen ?? true;
   const instagramHref = settings?.socialLinks?.instagram || '#';

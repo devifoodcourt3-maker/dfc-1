@@ -328,7 +328,7 @@ const HomePage = () => {
         title="DFC Restaurant | Best Restaurant in Tagarapuvalasa & Bheemili"
         description="DFC Restaurant (Devi Food Court) — The best restaurant in Tagarapuvalasa & Bheemili. Order authentic Dum Biryani, Tandoori, Curries, Sweets & Mocktails online for fast home delivery."
         keywords="DFC, DFC Restaurant, DFC Thagarapuvalasa, DFC Tagarapuvalasa, best restaurant, best restaurant in tagarapuvalasa, best restaurant in bheemili, food delivery Tagarapuvalasa"
-        canonical="https://dfcrestaurant.com/"
+        canonical="https://dfcthagarapuvalasa.in/"
       />
 
       {/* ── HERO — dark, premium, Biryani-led brand intro ─────────────────────────── */}

@@ -201,7 +201,7 @@ const TrackOrderPage = () => {
         title="Track Your Order | DFC Restaurant Tagarapuvalasa"
         description="Live track your food order from DFC Restaurant Tagarapuvalasa. Get real-time status updates from kitchen to your doorstep in 30-45 minutes."
         keywords="DFC order tracking, track DFC restaurant order, live food tracking Tagarapuvalasa, DFC Thagarapuvalasa"
-        canonical="https://dfcrestaurant.com/track"
+        canonical="https://dfcthagarapuvalasa.in/track"
       />
 
       {/* Dark overlay to blend background doodles seamlessly (lighter to make doodles more visible) */}

@@ -210,7 +210,7 @@ const OffersPage = () => {
         title="DFC Restaurant Offers & Coupons | Best Deals in Tagarapuvalasa & Bheemili"
         description="Save big on your food orders at DFC Restaurant. Get exclusive coupon codes, discounts, and combo deals on Biryani, Tandoori & Curries in Tagarapuvalasa and Bheemili."
         keywords="DFC offers, DFC restaurant coupons, DFC Tagarapuvalasa deals, food discounts Tagarapuvalasa, best restaurant offers Bheemili"
-        canonical="https://dfcrestaurant.com/offers"
+        canonical="https://dfcthagarapuvalasa.in/offers"
       />
 
       {/* Dark overlay to blend background doodles seamlessly */}
