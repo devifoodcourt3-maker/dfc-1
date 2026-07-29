@@ -1,0 +1,12 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+Allow: /menu
+Allow: /offers
+Allow: /contact
+Allow: /track
+
+# Disallow private checkout pages from indexation
+Disallow: /checkout
+
+Sitemap: https://dfcrestaurant.com/sitemap.xml

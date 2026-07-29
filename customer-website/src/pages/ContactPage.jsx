@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import SEO from '../components/shared/SEO';
 import { Phone, Mail, MapPin, Clock, Instagram, Facebook, MessageCircle } from 'lucide-react';
 import useSettingsStore from '../store/settingsStore';
 import cloudinaryAssets from '../cloudinary-assets.json';
@@ -101,6 +102,7 @@ const ContactPage = () => {
       { days: 'Saturday', time: '10:00 AM – 11:00 PM' },
       { days: 'Sunday', time: '10:00 AM – 11:00 PM' },
     ];
+
   return (
     <div className="min-h-screen pt-20 pb-24 px-4 relative overflow-hidden"
       style={{
@@ -109,6 +111,12 @@ const ContactPage = () => {
         backgroundSize: '750px',
         backgroundColor: '#0c0a09'
       }}>
+      <SEO
+        title="Contact DFC Restaurant Tagarapuvalasa | Outlets & Location"
+        description="Visit DFC Restaurant in Tagarapuvalasa. Find outlet locations, opening hours, contact phone numbers & get instant directions for the best food in Tagarapuvalasa & Bheemili."
+        keywords="DFC restaurant address, DFC Tagarapuvalasa location, DFC Thagarapuvalasa phone number, best restaurant in tagarapuvalasa, best restaurant in bheemili"
+        canonical="https://dfcrestaurant.com/contact"
+      />
 
       {/* Dark overlay to blend background doodles seamlessly (lighter to make doodles more visible) */}
       <div className="absolute inset-0 bg-black/42 pointer-events-none" />

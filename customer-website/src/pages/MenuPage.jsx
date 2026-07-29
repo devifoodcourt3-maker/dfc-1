@@ -6,6 +6,8 @@ import { getMenu } from '../services/api';
 import MenuCard from '../components/menu/MenuCard';
 import cloudinaryAssets from '../cloudinary-assets.json';
 
+import SEO from '../components/shared/SEO';
+
 const menuDoodleBg = cloudinaryAssets['menu-doodle-bg.png'];
 
 const MenuPage = () => {
@@ -69,6 +71,12 @@ const MenuPage = () => {
         backgroundSize: '750px',
         backgroundColor: '#0c0a09'
       }}>
+      <SEO
+        title="DFC Restaurant Menu | Best Biryani & Food Delivery Tagarapuvalasa & Bheemili"
+        description="Explore the full menu of DFC Restaurant — DFC Tagarapuvalasa's favorite spot for Dum Biryani, Tandoori Starters, Indian Curries, Sweets & Mocktails. Order online now!"
+        keywords="DFC menu, DFC restaurant menu, biryani Tagarapuvalasa, biryani Bheemili, DFC Thagarapuvalasa menu, best restaurant in tagarapuvalasa"
+        canonical="https://dfcrestaurant.com/menu"
+      />
 
       {/* Dark overlay to blend background doodles seamlessly (lighter to make doodles more visible) */}
       <div className="absolute inset-0 bg-black/42 pointer-events-none" />

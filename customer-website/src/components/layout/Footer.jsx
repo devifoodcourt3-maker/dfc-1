@@ -50,7 +50,7 @@ const Footer = () => {
             <span className="font-display text-lg tracking-wide text-white">Devi Food Court</span>
           </div>
           <p className="text-ink-600 text-xs leading-relaxed">
-            Authentic flavours crafted with love, delivered hot to your doorstep across Tagarapuvalasa.
+            DFC Restaurant (Devi Food Court) — The best restaurant in Tagarapuvalasa &amp; Bheemili. Famous for Dum Biryani, Tandoori Grills, Curries, Bakery &amp; Sweets with 30-45 min express delivery.
           </p>
           <div className="flex gap-2">
             {[

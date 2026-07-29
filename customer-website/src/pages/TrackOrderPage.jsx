@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import SEO from '../components/shared/SEO';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search, CheckCircle, Clock, ChefHat, Package, Truck, XCircle,
@@ -196,6 +197,12 @@ const TrackOrderPage = () => {
         backgroundSize: '750px',
         backgroundColor: '#0c0a09'
       }}>
+      <SEO
+        title="Track Your Order | DFC Restaurant Tagarapuvalasa"
+        description="Live track your food order from DFC Restaurant Tagarapuvalasa. Get real-time status updates from kitchen to your doorstep in 30-45 minutes."
+        keywords="DFC order tracking, track DFC restaurant order, live food tracking Tagarapuvalasa, DFC Thagarapuvalasa"
+        canonical="https://dfcrestaurant.com/track"
+      />
 
       {/* Dark overlay to blend background doodles seamlessly (lighter to make doodles more visible) */}
       <div className="absolute inset-0 bg-black/42 pointer-events-none" />
