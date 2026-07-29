@@ -762,7 +762,7 @@ const HomePage = () => {
           <p className="section-sub font-serif italic text-lg mx-auto text-center text-ink-700">Two iconic locations, the same unforgettable taste</p>
         </div>
 
-        <div className="flex sm:grid overflow-x-auto sm:overflow-x-visible pb-4 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 gap-6 sm:grid-cols-2 snap-x snap-mandatory" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {[
             {
               img: storefrontPink,
@@ -788,7 +788,7 @@ const HomePage = () => {
             <motion.div key={label}
               initial={{ opacity: 0, y: 32 }} whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }} transition={{ delay: i * 0.15, duration: 0.55 }}
-              className="group rounded-3xl overflow-hidden card-premium flex-shrink-0 w-[85vw] sm:w-auto snap-center"
+              className="group rounded-3xl overflow-hidden card-premium w-full"
               style={{ border: `1.5px solid ${accentBorder}`, boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}
             >
               {/* Image — responsive height so it does not dominate mobile viewports */}

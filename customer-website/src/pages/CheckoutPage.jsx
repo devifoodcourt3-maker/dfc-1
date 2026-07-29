@@ -59,6 +59,12 @@ const CheckoutPage = () => {
     const phoneRegex = /^[6-9]\d{9}$/;
     if (!phoneRegex.test(form.phone)) { toast.error('Please enter a valid 10-digit phone number'); return; }
 
+    if (!pinnedLocation) {
+      toast.error('📍 Please pin your delivery location on the map');
+      setShowMapPicker(true);
+      return;
+    }
+
     setIsPlacing(true);
     try {
       const payload = {
@@ -176,7 +182,7 @@ const CheckoutPage = () => {
                   placeholder="House No., Street, Area..." className="input-field resize-none" rows={3} required />
               </div>
 
-              {/* Pin exact location on map */}
+              {/* Pin exact location on map — REQUIRED */}
               {pinnedLocation ? (
                 <button type="button" onClick={() => setShowMapPicker(true)}
                   className="w-full flex items-center gap-3 rounded-xl px-4 py-3.5 text-left transition-colors"
@@ -188,10 +194,31 @@ const CheckoutPage = () => {
                   </div>
                 </button>
               ) : (
-                <button type="button" onClick={() => setShowMapPicker(true)}
-                  className="w-full flex items-center justify-center gap-2 bg-cream-100 hover:bg-cream-200 border border-ink-900/[0.08] rounded-xl px-4 py-3.5 text-sm font-medium text-ink-700 transition-colors">
-                  <MapPinned size={16} style={{ color: '#d97706' }} /> Pin exact location on map
-                </button>
+                <div className="relative">
+                  {/* Outer glow ring */}
+                  <span className="absolute inset-0 rounded-2xl animate-ping opacity-20" style={{ background: 'linear-gradient(135deg,#e2131c,#f7780e)' }} />
+                  <button
+                    type="button"
+                    onClick={() => setShowMapPicker(true)}
+                    className="relative w-full flex items-center gap-4 rounded-2xl px-5 py-4 text-left transition-transform active:scale-[0.98] hover:scale-[1.01]"
+                    style={{
+                      background: 'linear-gradient(135deg, #e2131c 0%, #f7780e 100%)',
+                      boxShadow: '0 4px 24px rgba(226,19,28,0.35), 0 1px 4px rgba(0,0,0,0.12)',
+                    }}>
+                    {/* Bouncing pin icon */}
+                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center" style={{ animation: 'bounce 1.2s infinite' }}>
+                      <MapPinned size={22} className="text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-white font-bold text-sm leading-tight">📍 Tap to pin your delivery location</p>
+                      <p className="text-white/75 text-xs mt-0.5">Required — helps your rider find you faster</p>
+                    </div>
+                    {/* Arrow indicator */}
+                    <div className="flex-shrink-0 flex flex-col items-center gap-0.5 opacity-80" style={{ animation: 'bounce 1s infinite' }}>
+                      <span className="text-white text-lg leading-none">›</span>
+                    </div>
+                  </button>
+                </div>
               )}
 
               <div>

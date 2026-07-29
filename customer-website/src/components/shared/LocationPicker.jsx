@@ -79,10 +79,10 @@ const LocationPicker = ({ initial, onConfirm, onClose }) => {
 
   return (
     /* Overlay — no padding on mobile so modal is edge-to-edge */
-    <div className="fixed inset-0 bg-ink-900/50 backdrop-blur-sm z-[1000] flex items-end sm:items-center justify-center sm:p-4">
+    <div className="fixed inset-0 bg-ink-900/50 backdrop-blur-sm z-[1000] flex items-start sm:items-center justify-center sm:p-4">
 
       {/*
-        Mobile  → bottom-sheet style, full viewport height, no rounded top corners
+        Mobile  → top-anchored, full viewport height, no rounded corners
         Desktop → centred card, max-w-lg, 90vh, rounded corners
       */}
       <div
@@ -152,20 +152,43 @@ const LocationPicker = ({ initial, onConfirm, onClose }) => {
             )}
           </MapContainer>
 
-          {/* Locate Me button */}
-          <button
-            type="button"
-            onClick={handleLocateMe}
-            disabled={isLocating}
-            className="absolute bottom-4 right-4 z-[500] bg-white border border-ink-900/[0.1] hover:bg-cream-100 text-ink-900 p-3 rounded-full shadow-soft-lg transition-colors active:scale-95"
-          >
-            {isLocating ? <Loader2 size={18} className="animate-spin" /> : <Crosshair size={18} />}
-          </button>
+          {/* Locate Me button — highlighted with glow + label */}
+          <div className="absolute bottom-4 right-4 z-[500] flex flex-col items-center gap-1.5">
+            {/* Pulsing glow ring */}
+            <div className="relative">
+              <span
+                className="absolute inset-0 rounded-full animate-ping"
+                style={{ background: 'linear-gradient(135deg,#e2131c,#f7780e)', opacity: 0.35 }}
+              />
+              <button
+                type="button"
+                onClick={handleLocateMe}
+                disabled={isLocating}
+                title="Use my current location"
+                className="relative flex items-center justify-center w-12 h-12 rounded-full shadow-lg transition-transform active:scale-90 hover:scale-105 disabled:opacity-60"
+                style={{
+                  background: 'linear-gradient(135deg, #e2131c 0%, #f7780e 100%)',
+                  boxShadow: '0 4px 18px rgba(226,19,28,0.45)',
+                }}
+              >
+                {isLocating
+                  ? <Loader2 size={20} className="animate-spin text-white" />
+                  : <Crosshair size={20} className="text-white" />}
+              </button>
+            </div>
+            {/* Label below button */}
+            <span
+              className="text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap"
+              style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)' }}
+            >
+              📍 Use my location
+            </span>
+          </div>
 
           {/* Hint overlay */}
           {!position && (
-            <div className="absolute top-3 left-3 right-3 z-[500] bg-white/95 border border-ink-900/[0.08] rounded-xl px-3 py-2 text-xs text-ink-600 text-center pointer-events-none shadow-soft">
-              Tap anywhere on the map to drop a pin, or search above
+            <div className="absolute top-3 left-3 right-16 z-[500] bg-white/95 border border-ink-900/[0.08] rounded-xl px-3 py-2 text-xs text-ink-600 text-center pointer-events-none shadow-soft">
+              Tap the map to drop a pin — or tap the <span className="font-bold" style={{ color: '#e2131c' }}>🎯 red button</span> for your current location
             </div>
           )}
         </div>
