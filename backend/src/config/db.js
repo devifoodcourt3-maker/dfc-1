@@ -13,7 +13,7 @@ const connectDB = async () => {
     console.log(`✅ MongoDB connected: ${conn.connection.host}`);
   } catch (error) {
     console.error('❌ MongoDB connection error:', error.message);
-    process.exit(1);
+    console.warn('⚠️ Server running, but database features require MONGODB_URI or local MongoDB running.');
   }
 };
 

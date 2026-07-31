@@ -356,8 +356,8 @@ const HomePage = () => {
         <div className="absolute inset-0 pointer-events-none"
              style={{ background: 'radial-gradient(ellipse 80% 80% at 50% 50%, transparent 40%, rgba(0,0,0,0.65) 100%)' }} />
 
-        {/* Soft ambient orange color blobs — static radial gradients, no animation cost */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {/* Soft ambient orange color blobs — static radial gradients, hidden on mobile */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden hidden md:block">
           <div className="orb-orange absolute w-[560px] h-[560px] -top-40 -right-40 rounded-full" />
           <div className="orb-red absolute w-[460px] h-[460px] -bottom-32 -left-32 rounded-full" />
           <div className="orb-orange absolute w-[320px] h-[320px] top-1/3 left-1/3 rounded-full" />

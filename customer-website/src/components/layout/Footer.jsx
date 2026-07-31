@@ -17,18 +17,12 @@ const Footer = () => {
 
   const getDashboardUrl = () => {
     if (import.meta.env.VITE_DASHBOARD_URL) return import.meta.env.VITE_DASHBOARD_URL;
-    if (window.location.hostname.includes('dfc-restaurant') || window.location.hostname.includes('pages.dev')) {
-      return 'https://dfc-dashboard.pages.dev';
-    }
-    return 'http://localhost:5174';
+    return 'https://admin.dfcthagarapuvalasa.in';
   };
 
   const getRiderUrl = () => {
     if (import.meta.env.VITE_RIDER_URL) return import.meta.env.VITE_RIDER_URL;
-    if (window.location.hostname.includes('dfc-restaurant') || window.location.hostname.includes('pages.dev')) {
-      return 'https://dfc-rider.pages.dev';
-    }
-    return 'http://localhost:5175';
+    return 'https://github.com/devifoodcourt3-maker/dfc-1/releases/latest/download/rider_app.apk';
   };
 
   return (
@@ -135,13 +129,17 @@ const Footer = () => {
         </div>
         
         {/* Staff portal shortcuts */}
-        <div className="flex justify-center items-center gap-2.5 text-[10px] text-ink-500">
-          <a href={getDashboardUrl()} target="_blank" rel="noopener noreferrer" className="hover:text-brand-500 transition-colors hover:underline">
-            Admin Portal
+        <div className="flex flex-wrap justify-center items-center gap-2.5 pt-1 text-[11px] sm:text-xs font-semibold">
+          <a href={getDashboardUrl()} target="_blank" rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/10 hover:bg-brand-500/20 text-brand-400 hover:text-brand-300 border border-brand-500/30 transition-all shadow-sm hover:scale-105">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
+            Admin Dashboard
           </a>
-          <span className="w-1 h-1 rounded-full bg-ink-600" />
-          <a href={getRiderUrl()} target="_blank" rel="noopener noreferrer" className="hover:text-brand-500 transition-colors hover:underline">
-            Delivery Portal
+          <span className="text-ink-600 font-normal">·</span>
+          <a href={getRiderUrl()} target="_blank" rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 hover:text-amber-300 border border-amber-500/30 transition-all shadow-sm hover:scale-105">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+            Rider App
           </a>
         </div>
       </div>

@@ -84,9 +84,9 @@ const Navbar = () => {
           {/* Cart + mobile trigger with safe 44x44px touch targets */}
           <div className="flex items-center gap-3">
             <button onClick={openCart}
-              className="relative w-11 h-11 rounded-full bg-black/[0.05] hover:bg-black/[0.08] text-black transition-all border border-black/[0.08] flex items-center justify-center"
+              className="relative w-11 h-11 rounded-full bg-stone-900 hover:bg-black text-white transition-all border border-stone-700/80 shadow-md flex items-center justify-center"
               aria-label="Shopping Cart">
-              <ShoppingCart size={19} />
+              <ShoppingCart size={19} className="text-white" />
               {count > 0 && (
                 <motion.span key={count}
                   initial={{ scale: 0 }} animate={{ scale: 1 }}
@@ -97,9 +97,9 @@ const Navbar = () => {
               )}
             </button>
             <button onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden w-11 h-11 rounded-full hover:bg-black/[0.05] text-black transition-all flex items-center justify-center"
+              className="md:hidden w-11 h-11 rounded-full bg-stone-900 hover:bg-black text-white transition-all border border-stone-700/80 shadow-md flex items-center justify-center"
               aria-label="Toggle Menu">
-              {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+              {mobileOpen ? <X size={20} className="text-white" /> : <Menu size={20} className="text-white" />}
             </button>
           </div>
         </div>
@@ -112,16 +112,16 @@ const Navbar = () => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="fixed top-16 left-0 right-0 z-40 bg-white/98 backdrop-blur-xl border-b border-ink-900/[0.06] shadow-soft-lg md:hidden">
+            className="fixed top-16 left-0 right-0 z-40 bg-[#161413] border-b border-white/10 shadow-soft-lg md:hidden">
             <div className="px-4 py-4 space-y-1">
               {NAV_LINKS.map(({ to, label }) => (
                 <NavLink key={to} to={to} end={to === '/'}
                   className={({ isActive }) =>
                     `relative block px-4 py-3 rounded-xl text-base font-semibold transition-all
-                    ${isActive ? 'bg-brand-50' : 'text-stone-700 hover:bg-black/[0.03] hover:text-black'}`
+                    ${isActive ? 'bg-brand-500/15 font-bold' : 'hover:bg-white/10'}`
                   }
-                  style={({ isActive }) => isActive ? { color: '#ff5a00' } : {}}>
-                  <span className="flex items-center gap-2">
+                  style={({ isActive }) => isActive ? { color: '#ff5a00' } : { color: '#ffffff' }}>
+                  <span className="flex items-center gap-2" style={{ color: 'inherit' }}>
                     {label}
                     {to === '/track' && hasNotification && (
                       <span className="bg-brand-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">

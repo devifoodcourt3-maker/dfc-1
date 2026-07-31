@@ -121,8 +121,8 @@ const ContactPage = () => {
       {/* Dark overlay to blend background doodles seamlessly (lighter to make doodles more visible) */}
       <div className="absolute inset-0 bg-black/42 pointer-events-none" />
 
-      {/* Ambient orange glow blobs behind header and content */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {/* Ambient orange glow blobs behind header and content — hidden on phone view to prevent text interference */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden hidden md:block">
         {/* Top-left corner warm orange focus spot */}
         <div className="absolute w-[900px] h-[900px] top-[-300px] left-[-350px] rounded-full"
           style={{

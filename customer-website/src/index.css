@@ -108,6 +108,12 @@
 .orb-orange { background: radial-gradient(circle, rgba(255, 90, 0, 0.06) 0%, transparent 70%); }
 .orb-green  { background: radial-gradient(circle, rgba(34, 197, 94, 0.04) 0%, transparent 70%); }
 
+@media (max-width: 767px) {
+  .orb-red, .orb-orange, .orb-green {
+    display: none !important;
+  }
+}
+
 /* Full-bleed photo banner sections (storefront photos as backgrounds) */
 .photo-banner {
   position: relative;
