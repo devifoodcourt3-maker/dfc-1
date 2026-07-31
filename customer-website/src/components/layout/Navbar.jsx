@@ -58,12 +58,8 @@ const Navbar = () => {
     <>
       {/* Framer Motion smooth scroll progress bar */}
       <motion.div
-        className="fixed top-0 left-0 right-0 h-[2.5px] z-[60] origin-left pointer-events-none"
-        style={{
-          scaleX,
-          background: 'linear-gradient(90deg, #ff5a00, #ea580c, #f59e0b)',
-          boxShadow: '0 0 10px rgba(255, 90, 0, 0.7)'
-        }}
+        className="fixed top-0 left-0 right-0 h-[2px] z-[60] origin-left pointer-events-none bg-black/70"
+        style={{ scaleX }}
       />
 
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300
@@ -83,27 +79,28 @@ const Navbar = () => {
             {NAV_LINKS.map(({ to, label }) => (
               <NavLink key={to} to={to} end={to === '/'}
                 className={({ isActive }) =>
-                  `relative px-4 py-2 rounded-full text-sm font-semibold transition-all duration-150
-                  ${isActive ? 'font-bold' : 'text-stone-200 hover:text-white hover:bg-white/10'}`
-                }
-                style={({ isActive }) => isActive ? { color: '#ff5a00' } : { color: '#ffffff' }}>
+                  `relative px-4 py-2 rounded-full text-sm font-semibold transition-colors duration-150 select-none
+                  ${isActive ? 'text-black font-bold' : 'text-stone-700 hover:text-black hover:bg-black/5'}`
+                }>
                 {({ isActive }) => (
-                  <span className="relative z-10 flex items-center gap-1">
-                    {label}
-                    {to === '/track' && hasNotification && (
-                      <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-500 opacity-75" />
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-500" />
-                      </span>
-                    )}
+                  <>
+                    <span className="relative z-10 flex items-center gap-1">
+                      {label}
+                      {to === '/track' && hasNotification && (
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-500 opacity-75" />
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-500" />
+                        </span>
+                      )}
+                    </span>
                     {isActive && (
                       <motion.span
                         layoutId="activeNavPill"
-                        className="absolute inset-0 rounded-full bg-brand-500/15 border border-brand-500/30 -z-10"
+                        className="absolute inset-0 rounded-full bg-stone-100 border border-stone-200 shadow-sm -z-10"
                         transition={{ type: "spring", stiffness: 400, damping: 32 }}
                       />
                     )}
-                  </span>
+                  </>
                 )}
               </NavLink>
             ))}
