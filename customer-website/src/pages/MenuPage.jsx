@@ -72,9 +72,9 @@ const MenuPage = () => {
         backgroundColor: '#0c0a09'
       }}>
       <SEO
-        title="DFC Restaurant Menu | Best Biryani & Food Delivery Tagarapuvalasa & Bheemili"
-        description="Explore the full menu of DFC Restaurant — DFC Tagarapuvalasa's favorite spot for Dum Biryani, Tandoori Starters, Indian Curries, Sweets & Mocktails. Order online now!"
-        keywords="DFC menu, DFC restaurant menu, biryani Tagarapuvalasa, biryani Bheemili, DFC Thagarapuvalasa menu, best restaurant in tagarapuvalasa"
+        title="DFC (Devi Food Court) Menu | Best Restaurant in Tagarapuvalasa & Bheemili"
+        description="Explore the full menu of DFC (Devi Food Court) — DFC Restaurant in Tagarapuvalasa & Bheemili for Dum Biryani, Tandoori Starters, Indian Curries, Sweets & Mocktails."
+        keywords="DFC menu, Devi Food Court menu, DFC restaurant menu, best restaurant in tagarapuvalasa, best restaurant in bheemili, biryani Tagarapuvalasa, biryani Bheemili"
         canonical="https://dfcthagarapuvalasa.in/menu"
       />
 

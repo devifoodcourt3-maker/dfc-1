@@ -198,9 +198,9 @@ const TrackOrderPage = () => {
         backgroundColor: '#0c0a09'
       }}>
       <SEO
-        title="Track Your Order | DFC Restaurant Tagarapuvalasa"
-        description="Live track your food order from DFC Restaurant Tagarapuvalasa. Get real-time status updates from kitchen to your doorstep in 30-45 minutes."
-        keywords="DFC order tracking, track DFC restaurant order, live food tracking Tagarapuvalasa, DFC Thagarapuvalasa"
+        title="Track Your Order | DFC (Devi Food Court) Tagarapuvalasa"
+        description="Live track your food order from DFC (Devi Food Court) — DFC Restaurant. Get real-time status updates from kitchen to your doorstep in 30-45 minutes."
+        keywords="DFC order tracking, track DFC restaurant order, Devi Food Court order status, DFC live tracking, best restaurant in tagarapuvalasa"
         canonical="https://dfcthagarapuvalasa.in/track"
       />
 

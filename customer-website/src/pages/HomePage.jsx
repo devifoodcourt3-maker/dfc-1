@@ -325,9 +325,9 @@ const HomePage = () => {
   return (
     <div className="min-h-screen overflow-x-hidden bg-cream-50">
       <SEO
-        title="DFC Restaurant | Best Restaurant in Tagarapuvalasa & Bheemili"
-        description="DFC Restaurant (Devi Food Court) — The best restaurant in Tagarapuvalasa & Bheemili. Order authentic Dum Biryani, Tandoori, Curries, Sweets & Mocktails online for fast home delivery."
-        keywords="DFC, DFC Restaurant, DFC Thagarapuvalasa, DFC Tagarapuvalasa, best restaurant, best restaurant in tagarapuvalasa, best restaurant in bheemili, food delivery Tagarapuvalasa"
+        title="DFC (Devi Food Court) | Best Restaurant in Tagarapuvalasa & Bheemili"
+        description="DFC (Devi Food Court) — DFC Restaurant in Tagarapuvalasa & Bheemili. Order authentic Dum Biryani, Tandoori, Curries, Sweets & Mocktails online for fast home delivery."
+        keywords="DFC, Devi Food Court, DFC Restaurant, best restaurant in tagarapuvalasa, best restaurant in bheemili, DFC Thagarapuvalasa, DFC Tagarapuvalasa, DFC reaturant"
         canonical="https://dfcthagarapuvalasa.in/"
       />
 

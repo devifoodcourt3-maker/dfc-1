@@ -112,9 +112,9 @@ const ContactPage = () => {
         backgroundColor: '#0c0a09'
       }}>
       <SEO
-        title="Contact DFC Restaurant Tagarapuvalasa | Outlets & Location"
-        description="Visit DFC Restaurant in Tagarapuvalasa. Find outlet locations, opening hours, contact phone numbers & get instant directions for the best food in Tagarapuvalasa & Bheemili."
-        keywords="DFC restaurant address, DFC Tagarapuvalasa location, DFC Thagarapuvalasa phone number, best restaurant in tagarapuvalasa, best restaurant in bheemili"
+        title="Contact DFC (Devi Food Court) | Best Restaurant in Tagarapuvalasa & Bheemili"
+        description="Visit DFC (Devi Food Court) — DFC Restaurant in Tagarapuvalasa. Find outlet locations, opening hours, contact phone numbers & get instant directions for the best restaurant in Tagarapuvalasa & Bheemili."
+        keywords="DFC contact, Devi Food Court address, DFC restaurant location, best restaurant in tagarapuvalasa, best restaurant in bheemili"
         canonical="https://dfcthagarapuvalasa.in/contact"
       />
 

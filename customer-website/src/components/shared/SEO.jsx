@@ -4,9 +4,9 @@ import { useEffect } from 'react';
  * Reusable SEO component for dynamic head tag updates per route
  */
 const SEO = ({
-  title = 'DFC Restaurant | Best Restaurant in Tagarapuvalasa & Bheemili',
-  description = 'DFC Restaurant (Devi Food Court) — The best restaurant in Tagarapuvalasa & Bheemili. Order authentic Dum Biryani, Tandoori, Curries, Sweets & Mocktails online for fast home delivery.',
-  keywords = 'DFC, DFC Restaurant, DFC Thagarapuvalasa, DFC Tagarapuvalasa, best restaurant, best restaurant in tagarapuvalasa, best restaurant in bheemili',
+  title = 'DFC (Devi Food Court) | Best Restaurant in Tagarapuvalasa & Bheemili',
+  description = 'DFC (Devi Food Court) — DFC Restaurant in Tagarapuvalasa & Bheemili. Order authentic Dum Biryani, Tandoori, Curries, Sweets & Mocktails online for fast home delivery.',
+  keywords = 'DFC, Devi Food Court, DFC Restaurant, best restaurant in tagarapuvalasa, best restaurant in bheemili, DFC Thagarapuvalasa, DFC Tagarapuvalasa, DFC reaturant',
   canonical = 'https://dfcthagarapuvalasa.in',
   ogImage = 'https://dfcthagarapuvalasa.in/starter-chicken.png',
 }) => {
