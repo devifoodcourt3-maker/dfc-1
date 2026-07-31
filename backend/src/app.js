@@ -16,7 +16,7 @@ const app = express();
 app.set('trust proxy', 1); // Trust Render's reverse proxy for real client IPs
 const httpServer = http.createServer(app);
 
-// ── Initialize Socket.IO ──────────────────────────────────────────────────────
+// ── Initialize Socket.IO ──00000000000000000────────────────────────────────────────────────────
 initSocket(httpServer);
 
 // ── Connect Database ──────────────────────────────────────────────────────────
