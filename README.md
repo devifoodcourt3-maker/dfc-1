@@ -29,6 +29,7 @@ pending → confirmed → preparing → ready → out_for_delivery → delivered
                                                (Rider App)
 ```
 
+
 - **Admin (Dashboard)** moves orders through `pending → confirmed → preparing → ready`, manages the
   delivery boy roster (add / activate-deactivate / remove) on the **Delivery Boys** page, and assigns
   a `ready` order to one of them.
