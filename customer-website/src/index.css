@@ -23,6 +23,14 @@
     -webkit-text-size-adjust: 100%;
   }
 
+  /* GPU-accelerated page transitions & smooth scrolling */
+  .smooth-scroll-page {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+
   ::-webkit-scrollbar { width: 5px; }
   ::-webkit-scrollbar-track { background: #0c0a09; }
   ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #ff5a00, #ea580c); border-radius: 9999px; }

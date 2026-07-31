@@ -16,18 +16,18 @@ import TrackOrderPage from './pages/TrackOrderPage';
 import ContactPage from './pages/ContactPage';
 import CheckoutPage from './pages/CheckoutPage';
 
-// Page transition variants — gentle fade + subtle upward slide
+// Fast, GPU-accelerated page transition variants for 60fps smooth navigation
 const pageVariants = {
-  initial: { opacity: 0, y: 18 },
+  initial: { opacity: 0, y: 12 },
   animate: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.38, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.18, ease: [0.16, 1, 0.3, 1] },
   },
   exit: {
     opacity: 0,
-    y: -10,
-    transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] },
+    y: -6,
+    transition: { duration: 0.12, ease: [0.16, 1, 0.3, 1] },
   },
 };
 
@@ -38,13 +38,14 @@ const PageWrapper = ({ children }) => (
     initial="initial"
     animate="animate"
     exit="exit"
+    className="smooth-scroll-page"
     style={{ willChange: 'opacity, transform' }}
   >
     {children}
   </motion.div>
 );
 
-// Scroll instantly to top before new page animates in (so animation always starts from top)
+// Scroll smoothly to top on page navigation
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -53,12 +54,12 @@ const ScrollToTop = () => {
   return null;
 };
 
-// Inner layout — needs useLocation for AnimatePresence key
+// Inner layout — AnimatePresence popLayout for zero-delay instant switching
 const AnimatedRoutes = () => {
   const location = useLocation();
 
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence mode="popLayout" initial={false}>
       <Routes location={location} key={location.pathname}>
         <Route path="/"         element={<PageWrapper><HomePage /></PageWrapper>} />
         <Route path="/menu"     element={<PageWrapper><MenuPage /></PageWrapper>} />

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { ShoppingCart, Menu, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
 import useCartStore from '../../store/cartStore';
 import useNotificationStore from '../../store/notificationStore';
 import cloudinaryAssets from '../../cloudinary-assets.json';
@@ -24,6 +24,13 @@ const Navbar = () => {
   const hasNotification = unseenCancelledOrders.length > 0;
   const location = useLocation();
   const count = totalItems();
+
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 25,
+    restDelta: 0.001,
+  });
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -49,6 +56,16 @@ const Navbar = () => {
 
   return (
     <>
+      {/* Framer Motion smooth scroll progress bar */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-[2.5px] z-[60] origin-left pointer-events-none"
+        style={{
+          scaleX,
+          background: 'linear-gradient(90deg, #ff5a00, #ea580c, #f59e0b)',
+          boxShadow: '0 0 10px rgba(255, 90, 0, 0.7)'
+        }}
+      />
+
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300
         ${scrolled ? 'bg-white/90 backdrop-blur-lg border-b border-ink-900/[0.06] shadow-soft' : 'bg-white/40 backdrop-blur-sm'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
@@ -61,20 +78,31 @@ const Navbar = () => {
             </span>
           </Link>
 
-          {/* Desktop nav */}
+          {/* Desktop nav with Framer Motion sliding active tab */}
           <div className="hidden md:flex items-center gap-1">
             {NAV_LINKS.map(({ to, label }) => (
               <NavLink key={to} to={to} end={to === '/'}
                 className={({ isActive }) =>
                   `relative px-4 py-2 rounded-full text-sm font-semibold transition-all duration-150
-                  ${isActive ? 'bg-brand-50' : 'text-stone-700 hover:text-black hover:bg-black/[0.05]'}`
+                  ${isActive ? 'font-bold' : 'text-stone-200 hover:text-white hover:bg-white/10'}`
                 }
-                style={({ isActive }) => isActive ? { color: '#ff5a00' } : {}}>
-                {label}
-                {to === '/track' && hasNotification && (
-                  <span className="absolute top-1 right-1.5 flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-500 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-500" />
+                style={({ isActive }) => isActive ? { color: '#ff5a00' } : { color: '#ffffff' }}>
+                {({ isActive }) => (
+                  <span className="relative z-10 flex items-center gap-1">
+                    {label}
+                    {to === '/track' && hasNotification && (
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-500 opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-500" />
+                      </span>
+                    )}
+                    {isActive && (
+                      <motion.span
+                        layoutId="activeNavPill"
+                        className="absolute inset-0 rounded-full bg-brand-500/15 border border-brand-500/30 -z-10"
+                        transition={{ type: "spring", stiffness: 400, damping: 32 }}
+                      />
+                    )}
                   </span>
                 )}
               </NavLink>
