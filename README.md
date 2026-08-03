@@ -12,7 +12,7 @@ dfc-restaurant/
 ├── customer-website/      # React + Vite + Tailwind (deploy on Cloudflare Pages)
 ├── dashboard/             # React + Vite + Tailwind — restaurant admin (deploy on Cloudflare Pages)
 └── rider/                 # React + Vite + Tailwind — mobile-first delivery boy app (deploy on Cloudflare Pages)
-```
+```vv
 
 ---
 
