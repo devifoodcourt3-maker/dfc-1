@@ -14,6 +14,7 @@ const CheckoutPage = () => {
   const sub = subtotal();
 
   const [form, setForm] = useState({ name: '', phone: '', address: '', landmark: '', notes: '' });
+  const [area, setArea] = useState('');
   const [pinnedLocation, setPinnedLocation] = useState(null);
   const [showMapPicker, setShowMapPicker] = useState(false);
   const [couponInput, setCouponInput] = useState('');
@@ -27,7 +28,9 @@ const CheckoutPage = () => {
   const baseCharge = settings?.deliveryCharge ?? 40;
   const freeAbove  = settings?.freeDeliveryAbove ?? 0;
   const autoFreeDelivery = freeAbove > 0 && sub >= freeAbove;
-  const DELIVERY = (coupon?.freeDelivery || autoFreeDelivery) ? 0 : baseCharge;
+  const activeAreas = settings?.deliveryAreas?.filter((a) => a.isActive) ?? [];
+  const areaExtraCharge = activeAreas.find((a) => a.name === area)?.extraCharge || 0;
+  const DELIVERY = (coupon?.freeDelivery || autoFreeDelivery) ? 0 : baseCharge + areaExtraCharge;
   const discount = coupon?.discount || 0;
   const total = Math.max(0, sub - discount + DELIVERY);
 
@@ -65,10 +68,15 @@ const CheckoutPage = () => {
       return;
     }
 
+    if (activeAreas.length > 0 && !area) {
+      toast.error('Please select your delivery area');
+      return;
+    }
+
     setIsPlacing(true);
     try {
       const payload = {
-        customer: { ...form, ...(pinnedLocation ? { location: { lat: pinnedLocation.lat, lng: pinnedLocation.lng } } : {}) },
+        customer: { ...form, area, ...(pinnedLocation ? { location: { lat: pinnedLocation.lat, lng: pinnedLocation.lng } } : {}) },
         items: items.map(({ _id, quantity }) => ({ menuItemId: _id, quantity })),
         couponCode: coupon?.code,
       };
@@ -181,6 +189,20 @@ const CheckoutPage = () => {
                 <textarea value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })}
                   placeholder="House No., Street, Area..." className="input-field resize-none" rows={3} required />
               </div>
+
+              {activeAreas.length > 0 && (
+                <div>
+                  <label className="block text-sm text-ink-600 mb-1.5">Delivery Area *</label>
+                  <select value={area} onChange={(e) => setArea(e.target.value)} className="input-field" required>
+                    <option value="" disabled>Select your area</option>
+                    {activeAreas.map((a) => (
+                      <option key={a._id || a.name} value={a.name}>
+                        {a.name}{a.extraCharge > 0 ? ` (+₹${a.extraCharge} delivery)` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               {/* Pin exact location on map — REQUIRED */}
               {pinnedLocation ? (
@@ -312,7 +334,7 @@ const CheckoutPage = () => {
                   </div>
                 )}
                 <div className="flex justify-between text-ink-600">
-                  <span className="flex items-center gap-1.5"><Bike size={13} /> Delivery</span>
+                  <span className="flex items-center gap-1.5"><Bike size={13} /> Delivery{area ? ` (${area})` : ''}</span>
                   <span style={coupon?.freeDelivery ? { color: '#15803d' } : {}} className={!coupon?.freeDelivery ? 'text-ink-900' : ''}>
                     {coupon?.freeDelivery ? 'FREE' : `₹${DELIVERY}`}
                   </span>

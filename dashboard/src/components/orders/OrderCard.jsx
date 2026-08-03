@@ -150,7 +150,10 @@ const OrderCard = ({ order, isNew = false }) => {
         </a>
         <p className="flex items-start gap-2 text-sm text-ink-600">
           <MapPin size={13} className="mt-0.5 flex-shrink-0" />
-          <span>{order.customer.address}{order.customer.landmark ? ` · ${order.customer.landmark}` : ''}</span>
+          <span>
+            {order.customer.address}{order.customer.landmark ? ` · ${order.customer.landmark}` : ''}
+            {order.customer.area ? <span className="font-medium text-ink-900"> · {order.customer.area}</span> : ''}
+          </span>
         </p>
         {hasLocation && (
           <button onClick={() => setShowMap(true)}

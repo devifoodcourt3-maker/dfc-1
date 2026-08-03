@@ -63,9 +63,17 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
     return next(new AppError('All selected items are currently unavailable', 400));
   }
 
-  // Get delivery charge from settings
+  // Get delivery charge from settings, plus any extra charge for the customer's selected area
   const settings = await Settings.findOne({ restaurantId });
   let deliveryCharge = settings?.deliveryCharge ?? 40;
+
+  const selectedArea = customer?.area
+    ? settings?.deliveryAreas?.find(
+        (a) => a.isActive && a.name.toLowerCase() === customer.area.trim().toLowerCase()
+      )
+    : null;
+  if (selectedArea) deliveryCharge += selectedArea.extraCharge || 0;
+
   if (settings?.freeDeliveryAbove > 0 && subtotal >= settings.freeDeliveryAbove) {
     deliveryCharge = 0;
   }

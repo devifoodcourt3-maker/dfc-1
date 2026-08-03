@@ -25,6 +25,7 @@ const placeOrderValidation = [
     .matches(/^[6-9]\d{9}$/)
     .withMessage('Please provide a valid 10-digit Indian phone number'),
   body('customer.address').trim().notEmpty().withMessage('Delivery address is required'),
+  body('customer.area').optional({ checkFalsy: true }).trim(),
   body('customer.location.lat').notEmpty().withMessage('Please pin your location on the map').isFloat({ min: -90, max: 90 }).withMessage('Invalid map latitude'),
   body('customer.location.lng').notEmpty().withMessage('Please pin your location on the map').isFloat({ min: -180, max: 180 }).withMessage('Invalid map longitude'),
   body('items').isArray({ min: 1 }).withMessage('At least one item is required'),

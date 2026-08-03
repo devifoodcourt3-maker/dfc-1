@@ -41,6 +41,7 @@ const orderSchema = new mongoose.Schema(
       name: { type: String, required: true, trim: true },
       phone: { type: String, required: true, trim: true },
       address: { type: String, required: true, trim: true },
+      area: { type: String, trim: true, default: '' },
       landmark: { type: String, trim: true, default: '' },
       notes: { type: String, trim: true, default: '' },
       // Optional pinned map location (free OpenStreetMap/Leaflet picker on the customer site)

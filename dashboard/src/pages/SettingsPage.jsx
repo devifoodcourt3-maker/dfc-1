@@ -59,7 +59,7 @@ const SettingsPage = () => {
 
   const addArea = () => {
     if (!newArea.trim()) return;
-    setSettings((s) => ({ ...s, deliveryAreas: [...(s.deliveryAreas || []), { name: newArea.trim(), isActive: true }] }));
+    setSettings((s) => ({ ...s, deliveryAreas: [...(s.deliveryAreas || []), { name: newArea.trim(), extraCharge: 0, isActive: true }] }));
     setNewArea('');
   };
 
@@ -71,6 +71,13 @@ const SettingsPage = () => {
     setSettings((s) => ({
       ...s,
       deliveryAreas: s.deliveryAreas.map((a, idx) => idx === i ? { ...a, isActive: !a.isActive } : a),
+    }));
+  };
+
+  const updateAreaCharge = (i, value) => {
+    setSettings((s) => ({
+      ...s,
+      deliveryAreas: s.deliveryAreas.map((a, idx) => idx === i ? { ...a, extraCharge: value } : a),
     }));
   };
 
@@ -220,6 +227,10 @@ const SettingsPage = () => {
       {tab === 'areas' && settings && (
         <div className="card p-6 space-y-4 max-w-2xl">
           <h3 className="font-semibold text-ink-900">Delivery Areas</h3>
+          <p className="text-ink-500 text-xs -mt-2">
+            Extra charge is added on top of the base delivery charge (see Delivery tab) when a customer
+            selects that area at checkout — e.g. base ₹{settings.deliveryCharge ?? 40} + ₹20 extra for a farther area = ₹{(Number(settings.deliveryCharge) || 0) + 20} delivery charge.
+          </p>
           <div className="space-y-2">
             {(settings.deliveryAreas || []).map((area, i) => (
               <div key={i} className="flex items-center gap-3 bg-cream-100 rounded-lg px-4 py-3">
@@ -229,6 +240,12 @@ const SettingsPage = () => {
                     : <ToggleLeft size={22} className="text-ink-300" />}
                 </button>
                 <span className={`flex-1 text-sm font-medium ${area.isActive ? 'text-ink-900' : 'text-ink-400'}`}>{area.name}</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-ink-400 text-xs">₹ extra</span>
+                  <input type="number" min="0" value={area.extraCharge ?? 0}
+                    onChange={(e) => updateAreaCharge(i, e.target.value)}
+                    className="input w-20 text-sm py-1.5" />
+                </div>
                 <button onClick={() => removeArea(i)} className="text-ink-400 hover:text-red-600 transition-colors">
                   <X size={15} />
                 </button>
