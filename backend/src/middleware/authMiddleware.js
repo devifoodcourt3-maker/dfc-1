@@ -71,4 +71,26 @@ const protectRider = catchAsync(async (req, res, next) => {
   next();
 });
 
-module.exports = { protect, protectRider };
+// ── Local KOT print agent auth ────────────────────────────────────────────────
+// The print agent runs unattended on a machine at the restaurant, so it can't
+// hold a user JWT — it authenticates with a long-lived per-restaurant key instead.
+const protectPrintAgent = catchAsync(async (req, res, next) => {
+  const key = req.headers['x-print-agent-key'];
+  if (!key) {
+    return next(new AppError('Missing print agent key', 401));
+  }
+
+  const restaurant = await Restaurant.findOne({ printAgentKey: key }).select('+printAgentKey');
+  if (!restaurant) {
+    return next(new AppError('Invalid print agent key', 401));
+  }
+
+  if (!restaurant.isActive) {
+    return next(new AppError('This restaurant account has been deactivated.', 403));
+  }
+
+  req.restaurant = restaurant;
+  next();
+});
+
+module.exports = { protect, protectRider, protectPrintAgent };

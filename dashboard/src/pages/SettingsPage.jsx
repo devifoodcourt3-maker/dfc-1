@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Save, Plus, X, ToggleLeft, ToggleRight, Store } from 'lucide-react';
+import { Save, Plus, X, ToggleLeft, ToggleRight, Store, Printer, Copy, RefreshCw, Eye, EyeOff } from 'lucide-react';
 import api from '../services/api';
 import useAuthStore from '../store/authStore';
 import toast from 'react-hot-toast';
@@ -15,6 +15,10 @@ const SettingsPage = () => {
   const [profile, setProfile] = useState({ name: '', phone: '', email: '', address: '', tagline: '' });
   const [settings, setSettings] = useState(null);
   const [newArea, setNewArea] = useState('');
+  const [printAgent, setPrintAgent] = useState(null); // { restaurantId, printAgentKey }
+  const [showKey, setShowKey] = useState(false);
+  const [isLoadingKey, setIsLoadingKey] = useState(false);
+  const [isRegeneratingKey, setIsRegeneratingKey] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -47,6 +51,32 @@ const SettingsPage = () => {
       toast.success('Settings saved');
     } catch { toast.error('Save failed'); }
     finally { setIsSaving(false); }
+  };
+
+  const loadPrintAgentKey = async () => {
+    setIsLoadingKey(true);
+    try {
+      const res = await api.get('/dashboard/print/agent-key');
+      setPrintAgent(res.data.data);
+    } catch { toast.error('Failed to load print agent key'); }
+    finally { setIsLoadingKey(false); }
+  };
+
+  const regeneratePrintAgentKey = async () => {
+    if (!confirm('Regenerating invalidates the current key — the print agent will stop working until its .env is updated with the new key. Continue?')) return;
+    setIsRegeneratingKey(true);
+    try {
+      const res = await api.post('/dashboard/print/agent-key/regenerate');
+      setPrintAgent(res.data.data);
+      setShowKey(true);
+      toast.success('Print agent key regenerated');
+    } catch { toast.error('Failed to regenerate key'); }
+    finally { setIsRegeneratingKey(false); }
+  };
+
+  const copyToClipboard = (text, label) => {
+    navigator.clipboard.writeText(text);
+    toast.success(`${label} copied`);
   };
 
   const toggleOpen = async () => {
@@ -88,6 +118,10 @@ const SettingsPage = () => {
     }));
   };
 
+  useEffect(() => {
+    if (tab === 'printer' && !printAgent) loadPrintAgentKey();
+  }, [tab]);
+
   if (isLoading) return <div className="p-6 text-ink-500">Loading settings...</div>;
 
   const TABS = [
@@ -95,6 +129,7 @@ const SettingsPage = () => {
     { id: 'delivery', label: 'Delivery' },
     { id: 'hours',    label: 'Opening Hours' },
     { id: 'areas',    label: 'Delivery Areas' },
+    { id: 'printer',  label: 'Print Agent' },
   ];
 
   return (
@@ -263,6 +298,63 @@ const SettingsPage = () => {
           <button onClick={saveSettings} disabled={isSaving} className="btn-primary flex items-center gap-2">
             <Save size={15} /> {isSaving ? 'Saving...' : 'Save Areas'}
           </button>
+        </div>
+      )}
+
+      {/* Print Agent */}
+      {tab === 'printer' && (
+        <div className="card p-6 space-y-4 max-w-2xl">
+          <div className="flex items-center gap-2">
+            <Printer size={18} className="text-ink-700" />
+            <h3 className="font-semibold text-ink-900">Kitchen Printer Agent</h3>
+          </div>
+          <p className="text-ink-500 text-sm">
+            The KOT print agent is a small program that runs on the computer connected to your kitchen
+            printer. It auto-prints a ticket whenever you confirm an order. Paste these two values into
+            its <code className="bg-cream-100 px-1 rounded">.env</code> file to connect it to this restaurant.
+          </p>
+
+          {isLoadingKey ? (
+            <p className="text-ink-400 text-sm">Loading...</p>
+          ) : printAgent ? (
+            <div className="space-y-3">
+              <div>
+                <label className="label">RESTAURANT_ID</label>
+                <div className="flex items-center gap-2">
+                  <input readOnly value={printAgent.restaurantId} className="input font-mono text-sm" />
+                  <button onClick={() => copyToClipboard(printAgent.restaurantId, 'Restaurant ID')}
+                    className="btn-secondary p-2.5" title="Copy">
+                    <Copy size={15} />
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="label">PRINT_AGENT_KEY</label>
+                <div className="flex items-center gap-2">
+                  <input readOnly type={showKey ? 'text' : 'password'} value={printAgent.printAgentKey}
+                    className="input font-mono text-sm" />
+                  <button onClick={() => setShowKey((v) => !v)} className="btn-secondary p-2.5" title={showKey ? 'Hide' : 'Show'}>
+                    {showKey ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
+                  <button onClick={() => copyToClipboard(printAgent.printAgentKey, 'Print agent key')}
+                    className="btn-secondary p-2.5" title="Copy">
+                    <Copy size={15} />
+                  </button>
+                </div>
+              </div>
+              <button onClick={regeneratePrintAgentKey} disabled={isRegeneratingKey}
+                className="flex items-center gap-2 text-sm text-red-600 hover:text-red-700 font-medium disabled:opacity-50">
+                <RefreshCw size={14} className={isRegeneratingKey ? 'animate-spin' : ''} />
+                {isRegeneratingKey ? 'Regenerating...' : 'Regenerate Key'}
+              </button>
+              <p className="text-ink-400 text-xs">
+                Only regenerate if this key may have leaked or you're setting up a replacement printer PC —
+                the running print agent will stop working until you update its <code className="bg-cream-100 px-1 rounded">.env</code> with the new key.
+              </p>
+            </div>
+          ) : (
+            <p className="text-red-600 text-sm">Failed to load. Try switching tabs and back.</p>
+          )}
         </div>
       )}
     </div>

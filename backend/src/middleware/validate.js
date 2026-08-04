@@ -81,6 +81,13 @@ const assignOrderValidation = [
   validate,
 ];
 
+// Print agent validators
+const reportPrintResultValidation = [
+  body('success').isBoolean().withMessage('success must be true or false'),
+  body('error').optional().isString(),
+  validate,
+];
+
 // Menu validators
 const menuItemValidation = [
   body('name').trim().notEmpty().withMessage('Item name is required'),
@@ -116,4 +123,5 @@ module.exports = {
   riderLoginValidation,
   addRiderValidation,
   assignOrderValidation,
+  reportPrintResultValidation,
 };

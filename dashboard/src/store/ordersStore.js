@@ -36,6 +36,27 @@ const useOrdersStore = create((set, get) => ({
     }));
   },
 
+  // Called by socket 'kot-print-status' (printing/printed/failed on the local print agent)
+  updatePrintStatus: (orderId, kot) => {
+    set((state) => ({
+      orders: state.orders.map((o) => (o.orderId === orderId ? { ...o, kot } : o)),
+    }));
+  },
+
+  // Admin-triggered reprint after a failed KOT (printer offline, out of paper, etc.)
+  retryPrint: async (id) => {
+    try {
+      const res = await api.post(`/dashboard/orders/${id}/print/retry`);
+      const kot = res.data.data.kot;
+      set((state) => ({
+        orders: state.orders.map((o) => (o._id === id ? { ...o, kot } : o)),
+      }));
+      return { success: true };
+    } catch (err) {
+      return { success: false, message: err.response?.data?.message };
+    }
+  },
+
   // Called when confirm/cancel clicked
   updateStatus: async (id, status) => {
     try {

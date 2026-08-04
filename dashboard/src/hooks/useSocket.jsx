@@ -15,7 +15,7 @@ let socketInstance = null;
 
 const useSocket = () => {
   const { restaurant } = useAuthStore();
-  const { addOrder, updateOrderInList, removeAcknowledged, unacknowledgedIds } = useOrdersStore();
+  const { addOrder, updateOrderInList, updatePrintStatus, removeAcknowledged, unacknowledgedIds } = useOrdersStore();
   const { updateRiderStatus } = useRidersStore();
 
   const audioRef = useRef(null);
@@ -200,6 +200,14 @@ const useSocket = () => {
       removeAcknowledged(orderId);
     });
 
+    // Kitchen ticket print status from the local print agent
+    socket.on('kot-print-status', ({ orderId, kot }) => {
+      updatePrintStatus(orderId, kot);
+      if (kot.status === 'failed') {
+        toast.error(`🖨️ KOT print failed for ${orderId} — check the printer and retry`);
+      }
+    });
+
     // Real-time rider availability badge updates
     socket.on('rider-status-update', ({ riderId, status, activeOrder }) => {
       updateRiderStatus(riderId, status, activeOrder);
@@ -213,6 +221,7 @@ const useSocket = () => {
       socket.off('new-order');
       socket.off('order-status-update');
       socket.off('order-acknowledged');
+      socket.off('kot-print-status');
       socket.off('rider-status-update');
       socket.off('connect');
       socket.off('disconnect');

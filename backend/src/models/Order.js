@@ -10,6 +10,24 @@ const orderItemSchema = new mongoose.Schema(
     quantity: { type: Number, required: true, min: 1 },
     imageUrl: { type: String },
     isVeg: { type: Boolean },
+    // Per-item kitchen note, e.g. "no onions" — shown on the KOT under the item line
+    note: { type: String, trim: true, default: '' },
+  },
+  { _id: false }
+);
+
+const KOT_PRINT_STATUSES = ['not_required', 'pending', 'printing', 'printed', 'failed'];
+
+// Tracks the automatic kitchen-ticket print triggered when an order is confirmed.
+// A separate sub-document (rather than top-level fields) keeps all print bookkeeping
+// grouped, and lets the print agent / dashboard reason about it as one unit.
+const kotPrintSchema = new mongoose.Schema(
+  {
+    status: { type: String, enum: KOT_PRINT_STATUSES, default: 'not_required' },
+    attempts: { type: Number, default: 0 },
+    lastError: { type: String, default: '' },
+    requestedAt: { type: Date },
+    printedAt: { type: Date },
   },
   { _id: false }
 );
@@ -51,6 +69,7 @@ const orderSchema = new mongoose.Schema(
       },
     },
     items: { type: [orderItemSchema], required: true },
+    orderType: { type: String, enum: ['delivery', 'takeaway'], default: 'delivery' },
     status: {
       type: String,
       enum: ORDER_STATUSES,
@@ -64,6 +83,8 @@ const orderSchema = new mongoose.Schema(
     total: { type: Number, required: true },
     couponCode: { type: String, uppercase: true },
     paymentMethod: { type: String, enum: ['cod'], default: 'cod' },
+    // Kitchen order ticket — auto-printed on confirm, see printController + config/socket
+    kot: { type: kotPrintSchema, default: () => ({}) },
     // Notification state: alert loops until acknowledged
     isAcknowledged: { type: Boolean, default: false },
     acknowledgedAt: { type: Date },
@@ -89,6 +110,7 @@ const orderSchema = new mongoose.Schema(
 orderSchema.index({ restaurantId: 1, createdAt: -1 });
 orderSchema.index({ 'customer.phone': 1 });
 orderSchema.index({ restaurantId: 1, status: 1 });
+orderSchema.index({ restaurantId: 1, 'kot.status': 1 });
 orderSchema.index({ assignedRider: 1, status: 1 });
 
 // Pre-save: push status change to history
@@ -101,3 +123,4 @@ orderSchema.pre('save', function (next) {
 
 module.exports = mongoose.model('Order', orderSchema);
 module.exports.ORDER_STATUSES = ORDER_STATUSES;
+module.exports.KOT_PRINT_STATUSES = KOT_PRINT_STATUSES;

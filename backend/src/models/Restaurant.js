@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 
 const restaurantSchema = new mongoose.Schema(
   {
@@ -18,6 +19,9 @@ const restaurantSchema = new mongoose.Schema(
     timezone: { type: String, default: 'Asia/Kolkata' },
     currency: { type: String, default: 'INR' },
     currencySymbol: { type: String, default: '₹' },
+    // Shared secret the local KOT print agent presents (x-print-agent-key header)
+    // to authenticate itself — it has no admin login of its own, so it can't use a JWT.
+    printAgentKey: { type: String, select: false },
   },
   { timestamps: true }
 );
@@ -25,6 +29,13 @@ const restaurantSchema = new mongoose.Schema(
 restaurantSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
   this.password = await bcrypt.hash(this.password, 12);
+  next();
+});
+
+restaurantSchema.pre('save', function (next) {
+  if (!this.printAgentKey) {
+    this.printAgentKey = crypto.randomBytes(24).toString('hex');
+  }
   next();
 });
 

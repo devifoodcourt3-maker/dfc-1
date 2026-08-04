@@ -6,13 +6,13 @@ const DeliveryBoy = require('../models/DeliveryBoy');
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
 const generateOrderId = require('../utils/generateOrderId');
-const { emitNewOrder, emitOrderStatusUpdate, emitOrderAcknowledged, emitRiderStatusUpdate } = require('../config/socket');
+const { emitNewOrder, emitOrderStatusUpdate, emitOrderAcknowledged, emitRiderStatusUpdate, emitPrintKOT } = require('../config/socket');
 
 // ─── Public: Place Order ──────────────────────────────────────────────────────
 
 exports.placeOrder = catchAsync(async (req, res, next) => {
   const restaurantId = req.params.restaurantId;
-  const { customer, items, couponCode } = req.body;
+  const { customer, items, couponCode, orderType } = req.body;
 
   // ── Block orders when restaurant is closed ─────────────────────────────────
   const restaurantSettings = await Settings.findOne({ restaurantId });
@@ -56,6 +56,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
       quantity: qty,
       imageUrl: menuItem.imageUrl,
       isVeg: menuItem.isVeg,
+      note: (item.note || '').toString().trim().slice(0, 200),
     });
   }
 
@@ -120,6 +121,7 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
     restaurantId,
     customer,
     items: enrichedItems,
+    orderType: orderType === 'takeaway' ? 'takeaway' : 'delivery',
     subtotal,
     deliveryCharge,
     discount,
@@ -273,6 +275,17 @@ exports.updateOrderStatus = catchAsync(async (req, res, next) => {
   }
 
   order.status = status;
+
+  // Confirming an order kicks off the automatic kitchen ticket print — queue the
+  // job here so it's persisted even if no print agent is connected right now
+  // (it will pick the job up via the pending-jobs catch-up poll once it is).
+  if (status === 'confirmed') {
+    order.kot.status = 'pending';
+    order.kot.attempts = 0;
+    order.kot.lastError = '';
+    order.kot.requestedAt = new Date();
+  }
+
   await order.save();
 
   // Auto-acknowledge on confirm or cancel
@@ -285,6 +298,12 @@ exports.updateOrderStatus = catchAsync(async (req, res, next) => {
 
   await order.populate('assignedRider', 'name phone vehicleNumber');
   emitOrderStatusUpdate(restaurantId.toString(), order.orderId, status, order.toJSON());
+
+  // Fire the KOT print job to the local print agent(s) after the status update
+  // has gone out, carrying the full order (customer, items, totals) it needs.
+  if (status === 'confirmed') {
+    emitPrintKOT(restaurantId.toString(), order.toJSON());
+  }
 
   // When an order is cancelled and had an assigned rider, check if that rider
   // still has other active deliveries; if not, flip them back to Available.

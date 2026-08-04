@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Phone, MapPin, Clock, CheckCircle, XCircle, ChefHat, Package, Truck, Bike, X, Map } from 'lucide-react';
 import StatusBadge from './StatusBadge';
+import PrintStatusBadge from './PrintStatusBadge';
 import LocationMapModal from './LocationMapModal';
 import useOrdersStore from '../../store/ordersStore';
 import useRidersStore from '../../store/ridersStore';
@@ -38,7 +39,8 @@ const OrderCard = ({ order, isNew = false }) => {
   const [showAssign, setShowAssign] = useState(false);
   const [showMap, setShowMap] = useState(false);
   const [selectedRiderId, setSelectedRiderId] = useState('');
-  const { updateStatus, assignRider, unassignRider } = useOrdersStore();
+  const [isRetryingPrint, setIsRetryingPrint] = useState(false);
+  const { updateStatus, assignRider, unassignRider, retryPrint } = useOrdersStore();
   const { riders, fetchRiders } = useRidersStore();
 
   const needsRider = ['ready', 'out_for_delivery'].includes(order.status);
@@ -78,6 +80,14 @@ const OrderCard = ({ order, isNew = false }) => {
     } else {
       toast.error(result.message || 'Assignment failed');
     }
+  };
+
+  const handleRetryPrint = async () => {
+    setIsRetryingPrint(true);
+    const result = await retryPrint(order._id);
+    setIsRetryingPrint(false);
+    if (result.success) toast.success('Reprint requested');
+    else toast.error(result.message || 'Retry failed');
   };
 
   const handleUnassign = async () => {
@@ -133,6 +143,9 @@ const OrderCard = ({ order, isNew = false }) => {
             <p className="text-xs text-ink-400 mt-0.5 flex items-center gap-1">
               <Clock size={11} /> {timeAgo}
             </p>
+            <div className="mt-1.5">
+              <PrintStatusBadge kot={order.kot} onRetry={handleRetryPrint} isRetrying={isRetryingPrint} />
+            </div>
           </div>
         </div>
         <div className="text-right flex-shrink-0">

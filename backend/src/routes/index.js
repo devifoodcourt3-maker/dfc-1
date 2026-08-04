@@ -7,7 +7,8 @@ const menuController = require('../controllers/menuController');
 const reportController = require('../controllers/reportController');
 const settingsController = require('../controllers/settingsController');
 const riderController = require('../controllers/riderController');
-const { protect, protectRider } = require('../middleware/authMiddleware');
+const printController = require('../controllers/printController');
+const { protect, protectRider, protectPrintAgent } = require('../middleware/authMiddleware');
 const {
   loginValidation,
   placeOrderValidation,
@@ -20,6 +21,7 @@ const {
   riderLoginValidation,
   addRiderValidation,
   assignOrderValidation,
+  reportPrintResultValidation,
 } = require('../middleware/validate');
 const { upload } = require('../config/cloudinary');
 
@@ -79,6 +81,15 @@ router.get('/dashboard/offers', protect, settingsController.getOffers);
 router.post('/dashboard/offers', protect, settingsController.createOffer);
 router.put('/dashboard/offers/:id', protect, settingsController.updateOffer);
 router.delete('/dashboard/offers/:id', protect, settingsController.deleteOffer);
+
+// ── Dashboard: KOT Printing ────────────────────────────────────────────────────
+router.get('/dashboard/print/agent-key', protect, printController.getPrintAgentKey);
+router.post('/dashboard/print/agent-key/regenerate', protect, printController.regeneratePrintAgentKey);
+router.post('/dashboard/orders/:id/print/retry', protect, printController.retryPrint);
+
+// ── Print Agent: local KOT bridge (authenticated via x-print-agent-key) ───────
+router.get('/print-agent/jobs', protectPrintAgent, printController.getPendingPrintJobs);
+router.post('/print-agent/jobs/:orderId/result', protectPrintAgent, reportPrintResultValidation, printController.reportPrintResult);
 
 // ── Dashboard: Delivery Boys (admin only: add / remove / list) ────────────────
 router.get('/dashboard/riders', protect, riderController.getRiders);

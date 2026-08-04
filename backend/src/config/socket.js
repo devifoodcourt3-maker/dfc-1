@@ -1,4 +1,5 @@
 const { Server } = require('socket.io');
+const Restaurant = require('../models/Restaurant');
 
 let io;
 
@@ -26,6 +27,30 @@ const initSocket = (httpServer) => {
     socket.on('join-rider', (riderId) => {
       socket.join(`rider:${riderId}`);
       console.log(`Rider joined room: rider:${riderId}`);
+    });
+
+    // Local KOT print agent joins its restaurant's printer room. Authenticated
+    // with the same per-restaurant key used for the REST fallback (protectPrintAgent)
+    // so a stray socket client can't eavesdrop on another restaurant's orders.
+    socket.on('join-printer', async ({ restaurantId, printAgentKey } = {}, ack) => {
+      try {
+        const restaurant = await Restaurant.findOne({
+          _id: restaurantId,
+          printAgentKey,
+        }).select('+printAgentKey');
+
+        if (!restaurant) {
+          console.warn(`Print agent auth failed for restaurant ${restaurantId}`);
+          if (typeof ack === 'function') ack({ success: false, message: 'Invalid restaurantId or print agent key' });
+          return;
+        }
+
+        socket.join(`printer:${restaurantId}`);
+        console.log(`Print agent joined room: printer:${restaurantId}`);
+        if (typeof ack === 'function') ack({ success: true });
+      } catch (err) {
+        if (typeof ack === 'function') ack({ success: false, message: 'Server error during print agent auth' });
+      }
     });
 
     // Customer joins order tracking room
@@ -105,6 +130,25 @@ const emitRiderStatusUpdate = (restaurantId, riderId, status, activeOrder = null
   io.to(`restaurant:${restaurantId}`).emit('rider-status-update', { riderId, status, activeOrder });
 };
 
+/**
+ * Push a KOT print job to the local print agent(s) listening for this restaurant.
+ * Sent to a dedicated `printer:*` room (separate from the dashboard's `restaurant:*`
+ * room) so print agents only ever receive print jobs, never unrelated dashboard events.
+ */
+const emitPrintKOT = (restaurantId, order) => {
+  if (!io) return;
+  io.to(`printer:${restaurantId}`).emit('print-kot', order);
+};
+
+/**
+ * Notify dashboard clients of a KOT print status change (printing/printed/failed)
+ * so the OrderCard can show a live indicator and, on failure, a Retry Print button.
+ */
+const emitPrintStatusUpdate = (restaurantId, orderId, kot) => {
+  if (!io) return;
+  io.to(`restaurant:${restaurantId}`).emit('kot-print-status', { orderId, kot });
+};
+
 const getIO = () => {
   if (!io) throw new Error('Socket.IO not initialized');
   return io;
@@ -118,5 +162,7 @@ module.exports = {
   emitOrderAssigned,
   emitSettingsUpdate,
   emitRiderStatusUpdate,
+  emitPrintKOT,
+  emitPrintStatusUpdate,
   getIO,
 };
