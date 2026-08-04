@@ -214,6 +214,32 @@ exports.getOrders = catchAsync(async (req, res, next) => {
   });
 });
 
+// ─── Dashboard: Clear Orders ──────────────────────────────────────────────────
+// Deletes orders matching the same status/date filters as getOrders above.
+// Omitting both filters clears every order for the restaurant.
+
+exports.clearOrders = catchAsync(async (req, res, next) => {
+  const restaurantId = req.restaurant._id;
+  const { status, date } = req.query;
+
+  const filter = { restaurantId };
+  if (status && status !== 'all') filter.status = status;
+  if (date) {
+    const start = new Date(date);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(date);
+    end.setHours(23, 59, 59, 999);
+    filter.createdAt = { $gte: start, $lte: end };
+  }
+
+  const result = await Order.deleteMany(filter);
+
+  res.status(200).json({
+    success: true,
+    data: { deletedCount: result.deletedCount },
+  });
+});
+
 // ─── Dashboard: Get Single Order ─────────────────────────────────────────────
 
 exports.getOrder = catchAsync(async (req, res, next) => {

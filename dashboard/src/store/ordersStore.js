@@ -96,6 +96,27 @@ const useOrdersStore = create((set, get) => ({
     }));
   },
 
+  clearOrders: async (params = {}) => {
+    try {
+      const res = await api.delete('/dashboard/orders/clear', { params });
+      const deletedCount = res.data.data.deletedCount;
+      set((state) => ({
+        orders: state.orders.filter((o) => {
+          if (params.status && params.status !== 'all' && o.status !== params.status) return true;
+          if (params.date) {
+            const orderDate = new Date(o.createdAt).toDateString();
+            const filterDate = new Date(params.date).toDateString();
+            if (orderDate !== filterDate) return true;
+          }
+          return false;
+        }),
+      }));
+      return { success: true, deletedCount };
+    } catch (err) {
+      return { success: false, message: err.response?.data?.message };
+    }
+  },
+
   filteredOrders: () => {
     const { orders, filter } = get();
     if (filter === 'all') return orders;

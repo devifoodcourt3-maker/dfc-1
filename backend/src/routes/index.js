@@ -48,6 +48,7 @@ router.post('/restaurants/:restaurantId/coupons/validate', applyCouponValidation
 
 // ── Dashboard: Orders ─────────────────────────────────────────────────────────
 router.get('/dashboard/orders', protect, orderController.getOrders);
+router.delete('/dashboard/orders/clear', protect, orderController.clearOrders);
 router.get('/dashboard/orders/unacknowledged', protect, orderController.getUnacknowledgedCount);
 router.get('/dashboard/orders/:id', protect, orderController.getOrder);
 router.patch('/dashboard/orders/:id/status', protect, updateStatusValidation, orderController.updateOrderStatus);

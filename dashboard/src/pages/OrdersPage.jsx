@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import { RefreshCw, Filter } from 'lucide-react';
+import { RefreshCw, Filter, Trash2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import useOrdersStore from '../store/ordersStore';
 import OrderCard from '../components/orders/OrderCard';
 
@@ -16,14 +17,35 @@ const FILTERS = [
 ];
 
 const OrdersPage = () => {
-  const { orders, isLoading, filter, setFilter, fetchOrders, filteredOrders, unacknowledgedIds } = useOrdersStore();
+  const { orders, isLoading, filter, setFilter, fetchOrders, filteredOrders, unacknowledgedIds, clearOrders } = useOrdersStore();
   const [date, setDate] = useState('');
+  const [isClearing, setIsClearing] = useState(false);
 
   useEffect(() => {
     fetchOrders();
   }, []);
 
   const handleRefresh = () => fetchOrders({ date, status: filter !== 'all' ? filter : undefined });
+
+  const handleClear = async () => {
+    const status = filter !== 'all' ? filter : undefined;
+    const scopeLabel = [
+      status ? FILTERS.find((f) => f.value === status)?.label : 'All orders',
+      date ? `on ${date}` : null,
+    ].filter(Boolean).join(' · ');
+
+    if (!confirm(`Permanently delete ${scopeLabel}? This cannot be undone.`)) return;
+
+    setIsClearing(true);
+    const result = await clearOrders({ date, status });
+    setIsClearing(false);
+
+    if (result.success) {
+      toast.success(`Cleared ${result.deletedCount} order${result.deletedCount === 1 ? '' : 's'}`);
+    } else {
+      toast.error(result.message || 'Failed to clear orders');
+    }
+  };
 
   const displayed = filteredOrders();
 
@@ -56,6 +78,11 @@ const OrdersPage = () => {
             className="btn-secondary flex items-center gap-2 text-sm">
             <RefreshCw size={15} className={isLoading ? 'animate-spin' : ''} />
             Refresh
+          </button>
+          <button onClick={handleClear} disabled={isClearing || orders.length === 0}
+            className="btn-secondary flex items-center gap-2 text-sm text-red-600 hover:bg-red-50 disabled:opacity-50">
+            <Trash2 size={15} />
+            Clear Orders
           </button>
         </div>
       </div>
