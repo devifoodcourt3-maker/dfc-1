@@ -16,12 +16,22 @@ const backendUrl = required('BACKEND_URL').replace(/\/$/, '');
 // printer configured as `printer:bill` logs simply as "bill".
 const displayName = (iface) => iface.replace(/^printer:/i, '');
 
+// node-thermal-printer requires a valid CharacterSet key to build its ESC/POS
+// codepage-select command; leaving it undefined makes iconv-lite blow up
+// with "Encoding not recognized: 'undefined'" the moment a receipt contains
+// any non-ASCII character. PC437_USA is the ESC/POS spec's own factory-default
+// codepage (what every printer, incl. the GA-E200 Series, already boots up
+// in), so it's a safe, behavior-preserving default for setups that never
+// configured a character set.
+const DEFAULT_CHARACTER_SET = 'PC437_USA';
+
 /**
  * Reads PRINTER_1_INTERFACE, PRINTER_2_INTERFACE, ... (each with optional
- * PRINTER_n_NAME/PRINTER_n_TYPE/PRINTER_n_CHAR_WIDTH overrides) so any number
- * of printers can be configured. Falls back to the original single-printer
- * PRINTER_INTERFACE/PRINTER_TYPE/PRINTER_CHAR_WIDTH vars when no PRINTER_n_*
- * vars are set, so existing single-printer .env files keep working unchanged.
+ * PRINTER_n_NAME/PRINTER_n_TYPE/PRINTER_n_CHAR_WIDTH/PRINTER_n_CHARACTER_SET
+ * overrides) so any number of printers can be configured. Falls back to the
+ * original single-printer PRINTER_INTERFACE/PRINTER_TYPE/PRINTER_CHAR_WIDTH/
+ * PRINTER_CHARACTER_SET vars when no PRINTER_n_* vars are set, so existing
+ * single-printer .env files keep working unchanged.
  */
 const parsePrinters = () => {
   const printers = [];
@@ -33,6 +43,7 @@ const parsePrinters = () => {
       interface: iface,
       type: process.env[`PRINTER_${i}_TYPE`] || process.env.PRINTER_TYPE || 'EPSON',
       charWidth: parseInt(process.env[`PRINTER_${i}_CHAR_WIDTH`] || process.env.PRINTER_CHAR_WIDTH || '42', 10),
+      characterSet: process.env[`PRINTER_${i}_CHARACTER_SET`] || process.env.PRINTER_CHARACTER_SET || DEFAULT_CHARACTER_SET,
     });
     i++;
   }
@@ -44,6 +55,7 @@ const parsePrinters = () => {
       interface: iface,
       type: process.env.PRINTER_TYPE || 'EPSON',
       charWidth: parseInt(process.env.PRINTER_CHAR_WIDTH || '42', 10),
+      characterSet: process.env.PRINTER_CHARACTER_SET || DEFAULT_CHARACTER_SET,
     });
   }
 

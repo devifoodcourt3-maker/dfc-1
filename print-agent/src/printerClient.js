@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs/promises');
 const { execFile } = require('child_process');
 const { promisify } = require('util');
-const { ThermalPrinter, PrinterTypes } = require('node-thermal-printer');
+const { ThermalPrinter, PrinterTypes, CharacterSet } = require('node-thermal-printer');
 const config = require('./config');
 const buildKotReceipt = require('./formatReceipt');
 const { withRetry } = require('./retry');
@@ -24,6 +24,12 @@ const createPrinter = (printerConfig) =>
     // connected to. Only a `tcp://` network printer uses it directly below.
     interface: isNetworkInterface(printerConfig.interface) ? printerConfig.interface : 'buffer',
     width: printerConfig.charWidth,
+    // Falls back to the codepage node-thermal-printer's own docs recommend
+    // (PC437_USA) if config.js's default was ever bypassed or a typo'd
+    // value slipped through — without a valid characterSet, iconv-lite
+    // throws "Encoding not recognized: 'undefined'" on the first non-ASCII
+    // character (accented names, curly quotes, etc.) in a receipt.
+    characterSet: CharacterSet[printerConfig.characterSet] || CharacterSet.PC437_USA,
     removeSpecialCharacters: false,
     options: { timeout: 5000 },
   });
