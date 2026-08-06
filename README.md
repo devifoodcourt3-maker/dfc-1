@@ -11,8 +11,10 @@ dfc-restaurant/
 ├── backend/               # Node.js + Express + Socket.IO (deploy on Render)
 ├── customer-website/      # React + Vite + Tailwind (deploy on Cloudflare Pages)
 ├── dashboard/             # React + Vite + Tailwind — restaurant admin (deploy on Cloudflare Pages)
-└── rider/                 # React + Vite + Tailwind — mobile-first delivery boy app (deploy on Cloudflare Pages)
-```vv
+└── rider/                 # React + Vite + Tailwind — mobile-first delivery boy app (deploy on Cloudflare Pages)— a stray double-space in the SEO meta description ("DFC —  DFC Restaurant"). Looks like an unintentional edit rather than a real fix; worth a look before committing.
+
+Anything specific you'd like to dig into — a particular flow, the recent navbar/SEO commits, or that pending diff?
+```
 
 ---
 
