@@ -6,6 +6,7 @@ import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import CartDrawer from './components/cart/CartDrawer';
 import StickyOrderButton from './components/shared/StickyOrderButton';
+import PromoModal from './components/shared/PromoModal';
 import useNotificationStore from './store/notificationStore';
 import useSettingsStore from './store/settingsStore';
 
@@ -97,6 +98,7 @@ const Layout = () => {
       <Navbar cartRef={cartIconRef} />
       <CartDrawer />
       <StickyOrderButton />
+      <PromoModal />
 
       <main style={{ contain: 'layout' }}>
         <AnimatedRoutes />
