@@ -64,6 +64,8 @@ const settingsSchema = new mongoose.Schema(
     },
     taxPercent: { type: Number, default: 0 },
     estimatedDeliveryMins: { type: Number, default: 45 },
+    promoImageUrl: { type: String },
+    promoImageCloudinaryId: { type: String },
   },
   { timestamps: true }
 );

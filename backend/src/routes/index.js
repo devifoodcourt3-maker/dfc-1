@@ -75,6 +75,7 @@ router.put('/dashboard/settings', protect, settingsValidation, settingsControlle
 router.patch('/dashboard/settings/toggle-open', protect, settingsController.toggleOpen);
 router.put('/dashboard/restaurant', protect, upload.single('logo'), settingsController.updateRestaurant);
 router.put('/dashboard/settings/delivery-areas', protect, settingsController.updateDeliveryAreas);
+router.put('/dashboard/settings/promo-image', protect, upload.single('promoImage'), settingsController.updatePromoImage);
 
 // ── Dashboard: Offers ──────────────────────────────────────────────────────────
 router.get('/dashboard/offers', protect, settingsController.getOffers);

@@ -5,7 +5,7 @@ import useSettingsStore from '../../store/settingsStore';
 
 const PromoModal = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { restaurant } = useSettingsStore();
+  const { restaurant, settings } = useSettingsStore();
 
   // Primary restaurant phone number (defaults to poster number 9032628395)
   const phoneDisplay = restaurant?.phone || '9032628395';
@@ -84,7 +84,7 @@ const PromoModal = () => {
               className="relative bg-amber-50/5 overflow-y-auto max-h-[75vh] flex items-center justify-center block cursor-pointer group"
             >
               <img
-                src="/promo-popup.jpg"
+                src={settings?.promoImageUrl || "/promo-popup.jpg"}
                 alt="Devi Food Court Special Offer Pack - Tap to Call"
                 className="w-full h-auto object-contain block select-none group-hover:opacity-95 transition-opacity"
                 loading="eager"

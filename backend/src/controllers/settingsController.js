@@ -152,6 +152,34 @@ exports.updateDeliveryAreas = catchAsync(async (req, res, next) => {
   });
 });
 
+// ─── Dashboard: Update Promo Image ────────────────────────────────────────────
+
+exports.updatePromoImage = catchAsync(async (req, res, next) => {
+  if (!req.file) {
+    return next(new AppError('No image uploaded', 400));
+  }
+
+  const restaurantId = req.restaurant._id;
+  const settings = await Settings.findOne({ restaurantId });
+  if (!settings) return next(new AppError('Settings not found', 404));
+
+  if (settings.promoImageCloudinaryId) {
+    await deleteImage(settings.promoImageCloudinaryId);
+  }
+
+  settings.promoImageUrl = req.file.path;
+  settings.promoImageCloudinaryId = req.file.filename;
+  await settings.save();
+
+  emitSettingsUpdate(restaurantId);
+
+  res.status(200).json({
+    success: true,
+    message: 'Promo popup image updated',
+    data: { settings },
+  });
+});
+
 // ─── Offers ───────────────────────────────────────────────────────────────────
 
 exports.getPublicOffers = catchAsync(async (req, res, next) => {

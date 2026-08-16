@@ -1,6 +1,6 @@
 
-import { useState, useEffect } from 'react';
-import { Save, Plus, X, ToggleLeft, ToggleRight, Store, Printer, Copy, RefreshCw, Eye, EyeOff } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Save, Plus, X, ToggleLeft, ToggleRight, Store, Printer, Copy, RefreshCw, Eye, EyeOff, Upload } from 'lucide-react';
 import api from '../services/api';
 import useAuthStore from '../store/authStore';
 import toast from 'react-hot-toast';
@@ -12,6 +12,8 @@ const SettingsPage = () => {
   const [tab, setTab] = useState('general');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingPromo, setIsUploadingPromo] = useState(false);
+  const promoFileInputRef = useRef(null);
 
   const [profile, setProfile] = useState({ name: '', phone: '', email: '', address: '', tagline: '' });
   const [settings, setSettings] = useState(null);
@@ -52,6 +54,28 @@ const SettingsPage = () => {
       toast.success('Settings saved');
     } catch { toast.error('Save failed'); }
     finally { setIsSaving(false); }
+  };
+
+  const handlePromoImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const fd = new FormData();
+    fd.append('promoImage', file);
+
+    setIsUploadingPromo(true);
+    try {
+      const res = await api.put('/dashboard/settings/promo-image', fd, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setSettings(res.data.data.settings);
+      toast.success('Promo popup image updated');
+    } catch {
+      toast.error('Failed to upload promo image');
+    } finally {
+      setIsUploadingPromo(false);
+      if (promoFileInputRef.current) promoFileInputRef.current.value = '';
+    }
   };
 
   const loadPrintAgentKey = async () => {
@@ -188,6 +212,56 @@ const SettingsPage = () => {
           <button onClick={saveProfile} disabled={isSaving} className="btn-primary flex items-center gap-2">
             <Save size={15} /> {isSaving ? 'Saving...' : 'Save Profile'}
           </button>
+        </div>
+      )}
+
+      {/* Promotions - Under General conceptually, but we can put it as another card below Profile or add a new tab. Let's just put it below Profile inside general */}
+      {tab === 'general' && (
+        <div className="card p-6 space-y-4 max-w-2xl mt-6">
+          <h3 className="font-semibold text-ink-900">Promo Popup Card</h3>
+          <p className="text-ink-500 text-sm">Upload an image to show as a popup card on the customer website. Customers can click it to call the restaurant.</p>
+          
+          <div className="flex items-start gap-6">
+            <div 
+              onClick={() => !isUploadingPromo && promoFileInputRef.current?.click()}
+              className={`relative w-48 h-64 border-2 border-dashed rounded-xl cursor-pointer transition-colors flex items-center justify-center overflow-hidden
+                ${settings?.promoImageUrl ? 'border-ink-900/[0.12]' : 'border-ink-900/[0.12] hover:border-brand-400'}
+                ${isUploadingPromo ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              {settings?.promoImageUrl ? (
+                <img src={settings.promoImageUrl} alt="Promo Popup" className="w-full h-full object-cover" />
+              ) : (
+                <div className="text-center text-ink-500 px-4">
+                  <Upload size={24} className="mx-auto mb-2" />
+                  <p className="text-sm">Click to upload popup image</p>
+                </div>
+              )}
+              {isUploadingPromo && (
+                <div className="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center">
+                  <RefreshCw size={24} className="text-brand-500 animate-spin" />
+                </div>
+              )}
+            </div>
+            
+            <div className="flex-1 space-y-2">
+              <p className="text-sm font-medium text-ink-700">Recommended Size:</p>
+              <p className="text-sm text-ink-500">Portrait orientation (e.g. 1080x1350px). Max 5MB. JPG, PNG, or WebP.</p>
+              <button 
+                onClick={() => promoFileInputRef.current?.click()}
+                disabled={isUploadingPromo}
+                className="btn-secondary mt-2 text-sm py-2 px-4"
+              >
+                {settings?.promoImageUrl ? 'Change Image' : 'Upload Image'}
+              </button>
+              <input 
+                ref={promoFileInputRef} 
+                type="file" 
+                accept="image/*" 
+                onChange={handlePromoImageUpload} 
+                className="hidden" 
+              />
+            </div>
+          </div>
         </div>
       )}
 
